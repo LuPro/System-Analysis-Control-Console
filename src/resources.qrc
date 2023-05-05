@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="main.qml">contents/ui/main.qml</file>
+        <file alias="pnidview.qml">contents/ui/pnidview.qml</file>
+        <file alias="home.qml">contents/ui/home.qml</file>
+    </qresource>
+    <qresource prefix="/components">
+        <file alias="BackendConnection.qml">contents/ui/components/BackendConnection.qml</file>
+    </qresource>
+    <qresource prefix="/pnid_elements">
+        <file alias="ValveSolenoid.qml">contents/ui/pnid_elements/ValveSolenoid.qml</file>
+    </qresource>
+    <qresource prefix="/pnids">
+        <file>contents/ui/pnids/pnidTest.qml</file>
+    </qresource>
+</RCC>
