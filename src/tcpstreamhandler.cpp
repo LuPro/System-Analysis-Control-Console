@@ -59,6 +59,11 @@ void TcpStreamHandler::onErrored(QAbstractSocket::SocketError error)
 void TcpStreamHandler::processData(QTcpSocket *socket)
 {
     QString messageStr = socket->readAll();
+    std::cout << "Got message" << std::endl << std::flush;
+    QByteArray bArray("Got message\n");
+    bArray.append('\0');
+    socket->write(bArray);
+    socket->waitForBytesWritten(3000);
     //std::cout << "got message string: " << messageStr.toStdString() << std::endl << std::flush;
     QJsonDocument message = QJsonDocument::fromJson(messageStr.toUtf8());
     QJsonArray packetsJsonArray = message.object().value("packets").toArray();

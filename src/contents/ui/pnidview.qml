@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15 as Controls
+import QtQuick.Window 2.2
 import QtQuick.Layouts 1.15
 import QtQuick.Shapes 1.15
 import org.kde.kirigami 2.20 as Kirigami
@@ -119,6 +120,29 @@ Kirigami.Page {
                 else {
                     testSolenoid2.value = 0;
                 }
+            }
+        }
+
+        Controls.Button {
+            text: "Popup"
+            onClicked: {
+                //testPopup.open()
+                testPopupWindow.active = true
+            }
+        }
+
+        Loader {
+            id: testPopupWindow
+            active: false
+            sourceComponent: Kirigami.ApplicationWindow {
+                title: "Test Popup"
+                width: 300
+                height: 200
+                visible: true
+                onClosing: {
+                    testPopupWindow.active = false
+                }
+                flags: Qt.WindowStaysOnTopHint
             }
         }
 
