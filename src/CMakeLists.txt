@@ -5,6 +5,10 @@ add_executable(pnid_viewer
     tcpstreamhandler.cpp
     pnidhandler.h
     pnidhandler.cpp
+    common.h
+    common.cpp
+    themehandler.h
+    themehandler.cpp
     resources.qrc
 )
 

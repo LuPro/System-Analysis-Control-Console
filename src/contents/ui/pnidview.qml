@@ -6,6 +6,7 @@ import QtQuick.Shapes 1.15
 import org.kde.kirigami 2.20 as Kirigami
 import "components"
 import "pnid_elements"
+import "pnids"
 
 Kirigami.Page {
     title: i18nc("@title", "PnID")
@@ -36,7 +37,6 @@ Kirigami.Page {
     Connections {
         target: tcpHandler
         function onIncomingData (packets) {
-            console.log("hi");
             console.log("hello", packets[0]);
             for (let i = 0; i < packets.length; i++)
             {
@@ -60,6 +60,10 @@ Kirigami.Page {
                 backendDisconnectWarning.visible = true;
             }
         }
+    }
+
+    Connections {
+        target: pnidHandler
     }
 
     ColumnLayout {
@@ -91,34 +95,10 @@ Kirigami.Page {
             id: pnidTabs
             Layout.fillWidth: true
 
-            Controls.TabButton {
-                text: "PnID1"
-            }
-            Controls.TabButton {
-                text: "PnID2"
-            }
-        }
-
-        Controls.Button {
-            text: "Click"
-            onClicked: {
-                if (testSolenoid.value == 0) {
-                    testSolenoid.value = 1;
-                }
-                else {
-                    testSolenoid.value = 0;
-                }
-            }
-        }
-
-        Controls.Button {
-            text: "Click2"
-            onClicked: {
-                if (testSolenoid2.value == 0) {
-                    testSolenoid2.value = 1;
-                }
-                else {
-                    testSolenoid2.value = 0;
+            Repeater {
+                model: pnidHandler.pnids
+                Controls.TabButton {
+                    text: modelData.name
                 }
             }
         }
@@ -126,7 +106,6 @@ Kirigami.Page {
         Controls.Button {
             text: "Popup"
             onClicked: {
-                //testPopup.open()
                 testPopupWindow.active = true
             }
         }
@@ -154,30 +133,28 @@ Kirigami.Page {
             }
         }
 
+        ValveSolenoid {
+
+        }
+
         StackLayout {
             id: pnidTabsContainer
+            objectName: "pnidTabsContainer"
             Layout.fillWidth: true
             Layout.fillHeight: true
             currentIndex: pnidTabs.currentIndex
 
-            Item {
-                id: pnidLamarr
-                ValveSolenoid {
-                    id: testSolenoid
-                    x: 20
-                    y: 30
-                }
-
-                ValveSolenoid {
-                    id: testSolenoid2
-                    x: 100
-                    y: 30
-                }
+            Component.onCompleted: {
+                console.log("loading pnids stacklayout");
+                pnidHandler.loadPnids(pnidTabsContainer);
             }
 
-
-            Rectangle {
-                color: "grey"
+            Repeater {
+                model: pnidHandler.pnids
+                Loader {
+                    objectName: modelData.name
+                    source: modelData.filePath
+                }
             }
         }
     }

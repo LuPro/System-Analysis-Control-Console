@@ -1,39 +1,26 @@
 #ifndef WEBSOCKETHANDLER_H
 #define WEBSOCKETHANDLER_H
 
-#include "QtWebSockets/QWebSocket"
-#include "QTcpServer"
-#include "QUrl"
-#include "QDebug"
-#include "QObject"
-#include "QString"
-#include "QVariantList"
-#include "QVariant"
-#include "iostream"
+#include <QtWebSockets/QWebSocket>
+#include <QTcpServer>
+#include <QUrl>
+#include <QDebug>
+#include <QObject>
+#include <QString>
+#include <iostream>
 
-#include "QJsonDocument"
-#include "QJsonObject"
-#include "QJsonValue"
-#include "QJsonArray"
-#include "QJsonParseError"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QJsonArray>
+#include <QJsonParseError>
+
+#include "common.h"
 
 struct ConnectionStatus {
     bool positive;
     QString message;
 };
-
-struct DataPacket {
-    Q_GADGET
-
-public:
-    QString m_id;
-    double m_value;
-
-    Q_PROPERTY(QString id MEMBER m_id)
-    Q_PROPERTY(double value MEMBER m_value)
-};
-
-Q_DECLARE_METATYPE(DataPacket)
 
 class TcpStreamHandler : public QObject
 {
@@ -55,7 +42,7 @@ private slots:
     void processData(QTcpSocket *socket);
 
 signals:
-    void incomingData(const QVariantList &packets);
+    void incomingData(const QVector<DataPacket> &packets);
     void disconnected(quint64 remainingConnectionCount);
     void connected();
 

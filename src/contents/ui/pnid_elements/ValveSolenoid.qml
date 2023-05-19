@@ -25,14 +25,14 @@ Item {
             label.fillColor = "#ff0000";
         }
         else {
-            triangleRight.strokeColor = "white";
+            triangleRight.strokeColor = Kirigami.Theme.textColor;
             triangleRight.fillColor = "#ffa500";
-            triangleLeft.strokeColor = "white";
+            triangleLeft.strokeColor = Kirigami.Theme.textColor;
             triangleLeft.fillColor = "#ffa500";
-            stem.strokeColor = "white";
-            square.strokeColor = "white";
-            label.strokeColor = "white";
-            label.fillColor = "white";
+            stem.strokeColor = Kirigami.Theme.textColor;
+            square.strokeColor = Kirigami.Theme.textColor;
+            label.strokeColor = Kirigami.Theme.textColor;
+            label.fillColor = Kirigami.Theme.textColor;
         }
     }
 
@@ -48,7 +48,7 @@ Item {
         ShapePath {
             id: triangleRight
             strokeWidth: valveServo.strokeWidth
-            strokeColor: "white"
+            strokeColor: Kirigami.Theme.neutralBackgroundColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
@@ -67,7 +67,7 @@ Item {
         ShapePath {
             id: triangleLeft
             strokeWidth: valveServo.strokeWidth
-            strokeColor: "white"
+            strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
@@ -85,7 +85,7 @@ Item {
         ShapePath {
             id: stem
             strokeWidth: valveServo.strokeWidth
-            strokeColor: "white"
+            strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
@@ -97,7 +97,7 @@ Item {
         ShapePath {
             id: square
             strokeWidth: valveServo.strokeWidth
-            strokeColor: "white"
+            strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
@@ -118,9 +118,9 @@ Item {
         ShapePath {
             id: label
             strokeWidth: valveServo.strokeWidth == 1 ? 1 : valveServo.strokeWidth / 2
-            strokeColor: "white"
+            strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
-            fillColor: "white"
+            fillColor: Kirigami.Theme.textColor
             PathText {
                 x: 20
                 y: 4

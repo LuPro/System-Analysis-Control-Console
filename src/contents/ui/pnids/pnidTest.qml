@@ -3,20 +3,26 @@ import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
 import QtQuick.Shapes 1.15
 import org.kde.kirigami 2.20 as Kirigami
-import "components"
-import "pnid_elements"
+import "../pnid_elements"
 
 Item {
     id: pnidTest
+    objectName: "pnidTest"
+
+    Component.onCompleted: {
+        pnidHandler.registerPnid(pnidTest)
+    }
 
     ValveSolenoid {
-        id: testSolenoid
+        id: testSolenoid1
+        objectName: "testSolenoid1"
         x: 20
         y: 30
     }
 
     ValveSolenoid {
         id: testSolenoid2
+        objectName: "testSolenoid2"
         x: 100
         y: 30
     }

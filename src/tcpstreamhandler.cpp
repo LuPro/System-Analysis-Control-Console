@@ -59,34 +59,27 @@ void TcpStreamHandler::onErrored(QAbstractSocket::SocketError error)
 void TcpStreamHandler::processData(QTcpSocket *socket)
 {
     QString messageStr = socket->readAll();
-    std::cout << "Got message" << std::endl << std::flush;
-    QByteArray bArray("Got message\n");
+    std::cout << "Got message: " << messageStr.toStdString() << std::endl << std::flush;
+    QByteArray bArray("Got message");
     bArray.append('\0');
     socket->write(bArray);
     socket->waitForBytesWritten(3000);
     //std::cout << "got message string: " << messageStr.toStdString() << std::endl << std::flush;
     QJsonDocument message = QJsonDocument::fromJson(messageStr.toUtf8());
     QJsonArray packetsJsonArray = message.object().value("packets").toArray();
-    qDebug() << packetsJsonArray.count();
+    //qDebug() << packetsJsonArray.count();
 
-    QVariantList packets;
+    QVector<DataPacket> packets;
     for (QJsonValueRef packetJson : packetsJsonArray)
     {
         DataPacket packet;
         QJsonObject object = packetJson.toObject();
         packet.m_id = object.value("name").toString();
         packet.m_value = object.value("value").toDouble();
-        std::cout << "packet: " << packet.m_id.toStdString() << ": " << packet.m_value << std::endl << std::flush;
-        packets.append(QVariant::fromValue(packet));
+        //std::cout << "packet: " << packet.m_id.toStdString() << ": " << packet.m_value << std::endl << std::flush;
+        packets.append(packet);
     }
 
-    /*QVector <DataPacket> packets;
-    packets.append(packet);
-    std::cout << "length: " << packets.length() << std::endl << std::flush;
-
-    for (DataPacket packet : packets)
-    {
-
-    }*/
+    std::cout << "emitting packets" << std::endl << std::flush;
     emit incomingData(packets);
 }

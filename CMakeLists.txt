@@ -6,6 +6,8 @@ set(CMAKE_AUTOMOC ON)
 set(KF_MIN_VERSION "5.68.0")
 set(QT_MIN_VERSION "5.12.0")
 
+add_compile_definitions(QT_DEBUG)
+
 find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
