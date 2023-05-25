@@ -8,6 +8,7 @@ import "../pnid_elements"
 Item {
     id: pnidTest
     objectName: "pnidTest"
+    //visible: false
 
     Component.onCompleted: {
         pnidHandler.registerPnid(pnidTest)
@@ -16,6 +17,7 @@ Item {
     ValveSolenoid {
         id: testSolenoid1
         objectName: "testSolenoid1"
+        displayName: "Solenoid 1"
         x: 20
         y: 30
     }
@@ -23,6 +25,7 @@ Item {
     ValveSolenoid {
         id: testSolenoid2
         objectName: "testSolenoid2"
+        displayName: "Solenoid 2"
         x: 100
         y: 30
     }

@@ -48,6 +48,8 @@ public slots:
 
     void processPackets(const QVector<DataPacket> &packets);
 
+    void handleUserInput(const QString &id, const double &value);
+
 signals:
 
     void pnidsUpdated();

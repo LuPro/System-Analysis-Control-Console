@@ -3,15 +3,21 @@ import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
 import QtQuick.Shapes 1.15
 import org.kde.kirigami 2.20 as Kirigami
+import "../popup_components"
 
 Item {
-    id: valveServo
+    id: pnidElement
     width: 48
     height: 58
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
+    property string displayName;
     property double value;
     property int strokeWidth: 2;
+
+    onDisplayNameChanged: {
+        popup.title = displayName;
+    }
 
     onValueChanged: {
         if (value > 0) {
@@ -23,6 +29,7 @@ Item {
             square.strokeColor = "#00aeff";
             label.strokeColor = "#ff0000";
             label.fillColor = "#ff0000";
+            valueDisplay.value = "Open";
         }
         else {
             triangleRight.strokeColor = Kirigami.Theme.textColor;
@@ -33,6 +40,27 @@ Item {
             square.strokeColor = Kirigami.Theme.textColor;
             label.strokeColor = Kirigami.Theme.textColor;
             label.fillColor = Kirigami.Theme.textColor;
+            valueDisplay.value = "Closed";
+        }
+    }
+
+    Kirigami.ApplicationWindow {
+        id: popup
+        title: pnidElement.displayName
+        width: 400
+        height: 300
+        flags: Qt.WindowStaysOnTopHint
+        visible: false
+
+        ColumnLayout {
+            spacing: Kirigami.Units.largeSpacing
+
+            ValueDisplay {
+                id: valueDisplay
+            }
+            DigitalInput {
+                label: "this is a cool label"
+            }
         }
     }
 
@@ -44,11 +72,24 @@ Item {
         height: parent.height
         asynchronous: true
 
+        TapHandler {
+            onTapped: {
+                if (popup.visible == true)
+                {
+                    //somehow highlight the already open popup
+                }
+                else
+                {
+                    popup.visible = true;
+                }
+
+            }
+        }
 
         ShapePath {
             id: triangleRight
-            strokeWidth: valveServo.strokeWidth
-            strokeColor: Kirigami.Theme.neutralBackgroundColor
+            strokeWidth: pnidElement.strokeWidth
+            strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
@@ -66,7 +107,7 @@ Item {
         }
         ShapePath {
             id: triangleLeft
-            strokeWidth: valveServo.strokeWidth
+            strokeWidth: pnidElement.strokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
@@ -84,7 +125,7 @@ Item {
         }
         ShapePath {
             id: stem
-            strokeWidth: valveServo.strokeWidth
+            strokeWidth: pnidElement.strokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
@@ -96,7 +137,7 @@ Item {
         }
         ShapePath {
             id: square
-            strokeWidth: valveServo.strokeWidth
+            strokeWidth: pnidElement.strokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
@@ -117,7 +158,7 @@ Item {
         }
         ShapePath {
             id: label
-            strokeWidth: valveServo.strokeWidth == 1 ? 1 : valveServo.strokeWidth / 2
+            strokeWidth: pnidElement.strokeWidth == 1 ? 1 : pnidElement.strokeWidth / 2
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: Kirigami.Theme.textColor

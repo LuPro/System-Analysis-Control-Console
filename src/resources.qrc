@@ -13,4 +13,8 @@
     <qresource prefix="/pnids">
         <file>contents/ui/pnids/pnidTest.qml</file>
     </qresource>
+    <qresource prefix="/popup_components">
+        <file alias="ValueDisplay.qml">contents/ui/popup_components/ValueDisplay.qml</file>
+        <file alias="DigitalInput.qml">contents/ui/popup_components/DigitalInput.qml</file>
+    </qresource>
 </RCC>

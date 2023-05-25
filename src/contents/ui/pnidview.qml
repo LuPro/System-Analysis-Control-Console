@@ -36,19 +36,6 @@ Kirigami.Page {
 
     Connections {
         target: tcpHandler
-        function onIncomingData (packets) {
-            console.log("hello", packets[0]);
-            for (let i = 0; i < packets.length; i++)
-            {
-                let packet = packets[i];
-                console.log("value", packet.value);
-                /*let pnidElement = pnidLamarr.findChild(function (child) {
-                    return child.id === packet.id;
-                });
-                pnidElement.value = packet.value;*/
-                testSolenoid.value = packet.value;
-            }
-        }
         function onConnected() {
             allBackendDisconnectWarning.visible = false;
             backendDisconnectWarning.visible = false;
@@ -104,37 +91,14 @@ Kirigami.Page {
         }
 
         Controls.Button {
-            text: "Popup"
-            onClicked: {
-                testPopupWindow.active = true
-            }
-        }
-
-        Loader {
-            id: testPopupWindow
-            active: false
-            sourceComponent: Kirigami.ApplicationWindow {
-                title: "Test Popup"
-                width: 300
-                height: 200
-                visible: true
-                onClosing: {
-                    testPopupWindow.active = false
-                }
-                flags: Qt.WindowStaysOnTopHint
-            }
-        }
-
-        Controls.Button {
             text: "send data"
             onClicked: {
-                console.log("clicked");
                 websocket.sendData("someId", 3.7);
             }
         }
 
         ValveSolenoid {
-
+            displayName: "Solenoid New"
         }
 
         StackLayout {
@@ -145,13 +109,17 @@ Kirigami.Page {
             currentIndex: pnidTabs.currentIndex
 
             Component.onCompleted: {
-                console.log("loading pnids stacklayout");
                 pnidHandler.loadPnids(pnidTabsContainer);
             }
 
             Repeater {
                 model: pnidHandler.pnids
+                /*onModelChanged: {
+                    pnidLoader.item.visible = true
+                }*/
+
                 Loader {
+                    //id: pnidLoader
                     objectName: modelData.name
                     source: modelData.filePath
                 }
@@ -161,7 +129,6 @@ Kirigami.Page {
 
     Kirigami.OverlaySheet {
         id: connectOverlay
-
 
         header: Kirigami.Heading {
             text: "Connect to Backend"

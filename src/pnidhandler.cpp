@@ -44,7 +44,6 @@ void PnidHandler::loadPnids(QVariant pnidContainerVariant)
     QFileInfo pnidTest(pnidBasePath + "pnidTest.qml");
     Pnid *pnid = new Pnid(pnidTest.completeBaseName(), QUrl::fromLocalFile(pnidTest.filePath()));
     pnids.append(pnid);
-    pnids.append(pnid);
     //TODO: file discovery and loading the number of found files. just append more to pnids vector to load more tabs
 
     emit pnidsUpdated();
@@ -52,7 +51,7 @@ void PnidHandler::loadPnids(QVariant pnidContainerVariant)
 
 void PnidHandler::registerPnid(QVariant pnidVariant)
 {
-    //todo: still needs a "deregister" for when a pnid gets closed (more likely: all pnids get closed)
+    //TODO: still needs a "deregister" for when a pnid gets closed (more likely: all pnids get closed)
     QObject *pnidObject = pnidVariant.value<QObject*>();
     QQmlEngine::setObjectOwnership(pnidObject, QQmlEngine::CppOwnership);
 
@@ -82,4 +81,9 @@ void PnidHandler::processPackets(const QVector<DataPacket> &packets)
         }
         pnidElement->setProperty("value", packet.m_value);
     }
+}
+
+void PnidHandler::handleUserInput(const QString &id, const double &value)
+{
+    std::cout << "received user input: " << id.toStdString() << " - " << value << std::endl;
 }
