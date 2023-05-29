@@ -13,7 +13,6 @@ Item {
     Layout.margins: Kirigami.Units.largeSpacing
 
     onValueChanged: {
-        console.log("value changed popup", value);
         display.text = value;
     }
 

@@ -11,15 +11,36 @@ Item {
     height: 58
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
-    property string displayName;
-    property double value;
-    property int strokeWidth: 2;
+    property string displayName
+    property double guiState
+    property double setState
+    property double value
+    property int strokeWidth: 2
+    property string labelPosition: "bottom"
 
-    onDisplayNameChanged: {
-        popup.title = displayName;
+    property bool checkSensTolerance: true
+
+    //popup lists are for elements that aren't following the main value of the pnid element
+    //eg: having a speed setting on a servo additionally to its position slider
+    property var popupPacketIds //list of strings
+    property var popupGuiStates //list of double
+    property var popupSetStates //list of double
+    property var popupValues //list of double
+
+    property string _formattedValue //this is only for internal use
+
+    function isInTolerance(measurement, reference) {
+        console.log("check is in tolerance", measurement, reference)
+        if (!checkSensTolerance || measurement === reference) {
+            console.log("is in tolerance");
+            return true;
+        }
+        console.log("is not in tolerance");
+        return false;
     }
 
-    onValueChanged: {
+    function applyStyling() {
+        console.log("applying styling", value, setState);
         if (value > 0) {
             triangleRight.strokeColor = "#00aeff";
             triangleRight.fillColor = "transparent";
@@ -27,9 +48,9 @@ Item {
             triangleLeft.fillColor = "transparent";
             stem.strokeColor = "#00aeff";
             square.strokeColor = "#00aeff";
-            label.strokeColor = "#ff0000";
-            label.fillColor = "#ff0000";
-            valueDisplay.value = "Open";
+            label.strokeColor = Kirigami.Theme.negativeTextColor;
+            label.fillColor = Kirigami.Theme.negativeTextColor;
+            _formattedValue = "Open";
         }
         else {
             triangleRight.strokeColor = Kirigami.Theme.textColor;
@@ -40,8 +61,34 @@ Item {
             square.strokeColor = Kirigami.Theme.textColor;
             label.strokeColor = Kirigami.Theme.textColor;
             label.fillColor = Kirigami.Theme.textColor;
-            valueDisplay.value = "Closed";
+            _formattedValue = "Closed";
         }
+
+        //TODO: It'd be better if I stop doing stuff I don't need to if outside of tolerance (eg: coloring open/close
+        //because this will be overridden here), but that may need code duplication for things that should happen
+        //regardless of in tolerance or not?
+        if (!isInTolerance(value, setState)) {
+            triangleRight.strokeColor = Kirigami.Theme.negativeTextColor;
+            triangleRight.fillColor = "transparent";
+            triangleLeft.strokeColor = Kirigami.Theme.negativeTextColor;
+            triangleLeft.fillColor = "transparent";
+            stem.strokeColor = Kirigami.Theme.negativeTextColor;
+            square.strokeColor = Kirigami.Theme.negativeTextColor;
+            label.strokeColor = Kirigami.Theme.textColor;
+            label.fillColor = Kirigami.Theme.textColor;
+        }
+    }
+
+    onDisplayNameChanged: {
+        popup.title = displayName;
+    }
+
+    onSetStateChanged: {
+        applyStyling();
+    }
+
+    onValueChanged: {
+        applyStyling();
     }
 
     Kirigami.ApplicationWindow {
@@ -57,11 +104,37 @@ Item {
 
             ValueDisplay {
                 id: valueDisplay
+                value: pnidElement._formattedValue
             }
             DigitalInput {
+                id: checkboxInput
                 label: "this is a cool label"
+                value: pnidElement.value
+                guiState: pnidElement.guiState
+                setState: pnidElement.setState
+            }
+            SliderInput {
+                id: sliderInput
+                value: pnidElement.value
+                guiState: pnidElement.guiState
+                setState: pnidElement.setState
             }
         }
+    }
+
+    Controls.Label {
+        text: pnidElement._formattedValue
+        visible: pnidElement.labelPosition == "none" ? false : true
+        anchors.margins: (pnidElement.labelPosition == "bottom") || (pnidElement.labelPosition == "top")
+                         ? 5 : 8
+        anchors.top: pnidElement.labelPosition == "bottom" ? pnidElement.bottom : undefined
+        anchors.bottom: pnidElement.labelPosition == "top" ? pnidElement.top : undefined
+        anchors.left: pnidElement.labelPosition == "right" ? pnidElement.right : undefined
+        anchors.right: pnidElement.labelPosition == "left" ? pnidElement.left : undefined
+        anchors.horizontalCenter: (pnidElement.labelPosition == "bottom") || (pnidElement.labelPosition == "top")
+                                  ? pnidElement.horizontalCenter : undefined
+        anchors.verticalCenter: (pnidElement.labelPosition == "left") || (pnidElement.labelPosition == "right")
+                                  ? pnidElement.verticalCenter : undefined
     }
 
     Shape {

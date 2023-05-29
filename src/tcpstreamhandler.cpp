@@ -17,7 +17,8 @@ void TcpStreamHandler::handleNewConnection()
 {
     //this currently only supports one connection and doesn't properly handle another second connection coming in
     QTcpSocket *socket = server.nextPendingConnection();
-    sockets.append(socket);
+    sockets.append(SocketWrapper(socket, MessageProtocol::native));
+    //protocol is hardcoded for now, should be read from the first message on the socket
     //std::cout << "got connection" << std::endl << std::flush;
     if (!socket->isOpen())
     {
@@ -38,17 +39,33 @@ void TcpStreamHandler::handleNewConnection()
     //like, is the socket in the QVector sockets still the same socket as the one passed to the lambda?
 }
 
-void TcpStreamHandler::sendData(const QString &id, const double &value)
+void TcpStreamHandler::sendData(const DataPacket &packet)
 {
-    std::cout << "id: " << id.toStdString() << " value: " << value << std::endl << std::flush;
+    //std::cout << "sending data id: " << packet.m_id.toStdString() << " value: " << packet.m_value << std::endl << std::flush;
+    for (uint16_t i = 0; i < sockets.length(); i++)
+    {
+        sockets[i].socket->write(packet.toString(sockets[i].protocol));
+    }
+
+    for (uint16_t i = 0; i < sockets.length(); i++)
+    {
+        //I don't like having to iterate through the sockets twice, but I rather write all to buffer and then wait
+        //then do so one after another
+        sockets[i].socket->waitForBytesWritten(1000);
+    }
 }
 
 void TcpStreamHandler::onDisconnected(QTcpSocket *socket)
 {
-    sockets.removeAt(sockets.indexOf(socket));
+    for (uint16_t i = 0; i < sockets.length(); i++)
+    {
+        if (sockets.at(i).socket == socket)
+        {
+            sockets.removeAt(i);
+        }
+    }
     emit disconnected(sockets.count());
     std::cout << "Disconnected" << std::endl << std::flush;
-
 }
 
 void TcpStreamHandler::onErrored(QAbstractSocket::SocketError error)
@@ -60,10 +77,6 @@ void TcpStreamHandler::processData(QTcpSocket *socket)
 {
     QString messageStr = socket->readAll();
     std::cout << "Got message: " << messageStr.toStdString() << std::endl << std::flush;
-    QByteArray bArray("Got message");
-    bArray.append('\0');
-    socket->write(bArray);
-    socket->waitForBytesWritten(3000);
     //std::cout << "got message string: " << messageStr.toStdString() << std::endl << std::flush;
     QJsonDocument message = QJsonDocument::fromJson(messageStr.toUtf8());
     QJsonArray packetsJsonArray = message.object().value("packets").toArray();

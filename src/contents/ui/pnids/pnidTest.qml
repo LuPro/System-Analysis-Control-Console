@@ -14,6 +14,29 @@ Item {
         pnidHandler.registerPnid(pnidTest)
     }
 
+    RowLayout {
+        Controls.Button {
+            text: "set state 0"
+            onClicked: {
+                testSolenoid1.setState = 0
+            }
+        }
+        Controls.Button {
+            text: "set state 1"
+            onClicked: {
+                testSolenoid1.setState = 1
+            }
+        }
+        /*Controls.Button {
+            text: "1 == 1"
+            onClicked: {
+                testSolenoid1.guiState = true
+                testSolenoid1.value = 1
+            }
+        }*/
+    }
+
+
     ValveSolenoid {
         id: testSolenoid1
         objectName: "testSolenoid1"

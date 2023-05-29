@@ -85,5 +85,5 @@ void PnidHandler::processPackets(const QVector<DataPacket> &packets)
 
 void PnidHandler::handleUserInput(const QString &id, const double &value)
 {
-    std::cout << "received user input: " << id.toStdString() << " - " << value << std::endl;
+    emit userInput(DataPacket(id, value));
 }

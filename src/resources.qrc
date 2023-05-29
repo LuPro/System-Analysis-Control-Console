@@ -16,5 +16,6 @@
     <qresource prefix="/popup_components">
         <file alias="ValueDisplay.qml">contents/ui/popup_components/ValueDisplay.qml</file>
         <file alias="DigitalInput.qml">contents/ui/popup_components/DigitalInput.qml</file>
+        <file alias="SliderInput.qml">contents/ui/popup_components/SliderInput.qml</file>
     </qresource>
 </RCC>

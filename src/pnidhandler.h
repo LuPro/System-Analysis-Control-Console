@@ -54,6 +54,8 @@ signals:
 
     void pnidsUpdated();
 
+    void userInput(const DataPacket &packet);
+
 private:
     QObject *pnidContainer;
     QObject *pnidTabs;

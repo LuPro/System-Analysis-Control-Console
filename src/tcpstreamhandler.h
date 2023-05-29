@@ -17,6 +17,15 @@
 
 #include "common.h"
 
+struct SocketWrapper {
+    QTcpSocket *socket;
+    MessageProtocol protocol;
+
+public:
+    inline SocketWrapper(QTcpSocket *socket, const MessageProtocol &protocol)
+        : socket(socket), protocol(protocol) {}
+};
+
 struct ConnectionStatus {
     bool positive;
     QString message;
@@ -32,7 +41,7 @@ public:
 public slots:
     void start(quint16 port = 3000);
 
-    void sendData(const QString &id, const double &value);
+    void sendData(const DataPacket &packet);
 
 private slots:
     void handleNewConnection();
@@ -48,7 +57,7 @@ signals:
 
 private:
     QTcpServer server;
-    QVector<QTcpSocket*> sockets;
+    QVector<SocketWrapper> sockets;
 };
 
 #endif // WEBSOCKETHANDLER_H
