@@ -52,4 +52,12 @@ Item {
         x: 100
         y: 30
     }
+
+    ValveSolenoid {
+        id: testLight
+        objectName: "4:01_Distribution/4:MES/4:Product"
+        displayName: "Product Selection"
+        x: 180
+        y: 30
+    }
 }
