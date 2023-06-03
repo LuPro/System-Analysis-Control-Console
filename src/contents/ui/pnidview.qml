@@ -36,7 +36,7 @@ Kirigami.Page {
 
     Connections {
         target: tcpHandler
-        function onConnected() {
+        function onConnectedBackend() {
             allBackendDisconnectWarning.visible = false;
             backendDisconnectWarning.visible = false;
         }
@@ -45,6 +45,13 @@ Kirigami.Page {
                 allBackendDisconnectWarning.visible = true;
             } else {
                 backendDisconnectWarning.visible = true;
+            }
+        }
+        Component.onCompleted: {
+            if (tcpHandler.isClientMode()) {
+                allBackendDisconnectWarning.visible = false;
+                backendDisconnectWarning.visible = false;
+                clientModeInfo.visible = true;
             }
         }
     }
@@ -76,6 +83,16 @@ Kirigami.Page {
             showCloseButton: true
 
             text: qsTr("No connection to any backend.")
+        }
+
+        Kirigami.InlineMessage {
+            id: clientModeInfo
+            Layout.fillWidth: true
+            visible: false
+            type: Kirigami.MessageType.Information
+            showCloseButton: true
+
+            text: qsTr("Connected to a forward server, backend disconnects will not be detected.")
         }
 
         Controls.TabBar {
@@ -134,10 +151,14 @@ Kirigami.Page {
             text: "Connect to Backend"
         }
 
-        BackendConnection {
+        contentItem: BackendConnection {
             Layout.preferredWidth: Kirigami.Units.gridUnit * 25
-            onBackendConnect: {
-                console.log("connecting to", backendIp);
+            onServerStart: {
+                console.log("starting server as", tcpServerPort);
+                connectOverlay.close();
+            }
+            onServerConnect: {
+                console.log("connecting to server at", tcpForwardServerAddress, tcpForwardServerPort);
                 connectOverlay.close();
             }
         }

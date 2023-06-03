@@ -57,7 +57,17 @@ Item {
         id: testLight
         objectName: "4:01_Distribution/4:MES/4:Product"
         displayName: "Product Selection"
+        checkSensTolerance: false
         x: 180
+        y: 30
+    }
+
+    ValveSolenoid {
+        id: testMockServer
+        objectName: "2:MyObject/2:MyVariable"
+        displayName: "Mock Server MyVar"
+        checkSensTolerance: false
+        x: 260
         y: 30
     }
 }

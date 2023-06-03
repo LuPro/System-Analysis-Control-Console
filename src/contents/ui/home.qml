@@ -11,16 +11,24 @@ Kirigami.Page {
     Kirigami.FormLayout {
         anchors.centerIn: parent
         Kirigami.Heading {
+            anchors.horizontalCenter: parent.horizontalCenter
             text: "Welcome to PnID Viewer"
             level: 1
         }
         Controls.Label {
+            anchors.horizontalCenter: parent.horizontalCenter
             text: "Interactive System Visualization"
         }
 
+        Kirigami.Separator {}
+
         BackendConnection {
-            onBackendConnect: (port) => {
+            onServerStart: (port, forwardPort) => {
                 tcpHandler.start(port);
+                pageStack.replace(Qt.resolvedUrl("pnidview.qml"));
+            }
+            onServerConnect: (address, port) => {
+                tcpHandler.connect(address, port);
                 pageStack.replace(Qt.resolvedUrl("pnidview.qml"));
             }
         }
