@@ -108,9 +108,8 @@ Kirigami.Page {
         }
 
         Controls.Button {
-            text: "send data"
+            text: "blank"
             onClicked: {
-                websocket.sendData("someId", 3.7);
             }
         }
 
