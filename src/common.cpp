@@ -1,6 +1,6 @@
 #include "common.h"
 
-QByteArray DataPacket::toString(const MessageProtocol &protocol) const
+QByteArray DataPacket::toByteArray(const MessageProtocol &protocol) const
 {
     switch (protocol)
     {

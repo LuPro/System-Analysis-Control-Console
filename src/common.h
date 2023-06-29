@@ -17,7 +17,7 @@ class DataPacket {
 
 public:
     inline DataPacket(QString id = "", double value = 0) : m_id(id), m_value(value) {}
-    QByteArray toString(const MessageProtocol &protocol) const;
+    QByteArray toByteArray(const MessageProtocol &protocol) const;
 
     QString m_id;
     double m_value;

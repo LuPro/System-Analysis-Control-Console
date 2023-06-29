@@ -15,19 +15,26 @@ Kirigami.Page {
     actions {
         contextualActions: [
             Kirigami.Action {
+                visible: !tcpHandler.isClientMode() && tcpHandler.backendSockets.length > 0
+                text: "Connected Backends"
+                onTriggered: {
+                    backendsListOverlay.open();
+                }
+            },
+            Kirigami.Action {
+                visible: !tcpHandler.isClientMode() && tcpHandler.frontendSockets.length > 0
+                text: "Connected Frontends"
+                onTriggered: {
+                    frontendsListOverlay.open();
+                }
+            },
+
+            Kirigami.Action {
                 text: "Connect to other backend"
                 icon.name: "network-connect"
                 shortcut: StandardKey.New
                 onTriggered: {
                     connectOverlay.open();
-                }
-            },
-            Kirigami.Action {
-                text: "Simulate Disconnect"
-                icon.name: "network-disconnect"
-                shortcut: StandardKey.Close
-                onTriggered: {
-                    backendDisconnectWarning.visible = true;
                 }
             }
 
@@ -36,6 +43,14 @@ Kirigami.Page {
 
     Connections {
         target: tcpHandler
+        function onBackendSocketsChanged() {
+            console.log("backend sockets changed");
+        }
+        function onFrontendSocketsChanged() {
+            console.log("frontend sockets changed");
+            console.log(tcpHandler.frontendSockets, tcpHandler.frontendSockets.modelData);
+        }
+
         function onConnectedBackend() {
             allBackendDisconnectWarning.visible = false;
             backendDisconnectWarning.visible = false;
@@ -138,6 +153,57 @@ Kirigami.Page {
                     //id: pnidLoader
                     objectName: modelData.name
                     source: modelData.filePath
+                }
+            }
+        }
+    }
+
+    Kirigami.OverlaySheet {
+        id: backendsListOverlay
+
+        header: Kirigami.Heading {
+            text: "List of connected Backends"
+        }
+
+        contentItem: RowLayout {
+
+        }
+    }
+
+    Kirigami.OverlaySheet {
+        id: frontendsListOverlay
+
+        header: Kirigami.Heading {
+            text: "List of connected Frontends"
+        }
+
+        contentItem: Item {
+            implicitWidth: frontendsListLayout.implicitWidth
+            implicitHeight: frontendsListLayout.implicitHeight
+
+            Kirigami.FormLayout {
+                id: frontendsListLayout
+                Controls.Switch {
+                    text: "Disable UI interactions for connected frontends"
+                }
+                Kirigami.CardsListView {
+                    model: tcpHandler.frontendSockets
+                    implicitWidth: frontendsList.implicitWidth
+                    implicitHeight: frontendsList.implicitHeight
+
+                    Kirigami.AbstractCard {
+                        contentItem: Item {
+                            implicitWidth: frontendsList.implicitWidth
+                            implicitHeight: frontendsList.implicitHeight
+
+                            ColumnLayout {
+                                id: frontendsList
+                                Controls.Label {
+                                    text: "Hello"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -17,6 +17,11 @@ Item {
     property double value
     property int strokeWidth: 2
     property string labelPosition: "bottom"
+    property int rotation: 0 //rotation id: 0, 1, 2, 3 -> 90° steps
+
+    property string unit
+    property string content
+    property var connections //list of connection points that other elements can connect to
 
     property bool checkSensTolerance: true
 
@@ -144,6 +149,11 @@ Item {
         width: parent.width
         height: parent.height
         asynchronous: true
+        transform: Rotation {
+            origin.x: pnidElement.width/2
+            origin.y: pnidElement.height/2
+            angle: 90 * rotation
+        }
 
         TapHandler {
             onTapped: {

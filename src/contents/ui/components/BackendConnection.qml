@@ -28,7 +28,6 @@ ColumnLayout {
         currentIndex: connectTabBar.currentIndex
 
         Kirigami.FormLayout {
-            anchors.fill: parent
             wideMode: backendConnection.wideMode
 
             Controls.Label {
@@ -52,7 +51,6 @@ ColumnLayout {
         }
 
         Kirigami.FormLayout {
-            anchors.fill: parent
             wideMode: backendConnection.wideMode
 
             Controls.Label {

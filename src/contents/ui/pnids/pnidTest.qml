@@ -16,26 +16,12 @@ Item {
 
     RowLayout {
         Controls.Button {
-            text: "set state 0"
+            text: "blank"
             onClicked: {
-                testSolenoid1.setState = 0
-            }
-        }
-        Controls.Button {
-            text: "set state 1"
-            onClicked: {
-                testSolenoid1.setState = 1
-            }
-        }
-        /*Controls.Button {
-            text: "1 == 1"
-            onClicked: {
-                testSolenoid1.guiState = true
-                testSolenoid1.value = 1
-            }
-        }*/
-    }
 
+            }
+        }
+    }
 
     ValveSolenoid {
         id: testSolenoid1
@@ -69,5 +55,21 @@ Item {
         checkSensTolerance: false
         x: 260
         y: 30
+        rotation: 1
+    }
+
+    Shape {
+        ShapePath {
+            property var connectedElements: ["testSolenoid1", "testSolenoid2"] //list of connected pnid elements
+            strokeWidth: 2
+            strokeColor: Kirigami.Theme.textColor
+            strokeStyle: ShapePath.SolidLine
+
+            startX: 68; startY: 66
+            PathLine {
+                x: 100
+                y: 66
+            }
+        }
     }
 }

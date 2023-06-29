@@ -23,7 +23,10 @@ void TcpStreamHandler::connect(const QString &address, const quint16 &port)
     std::cout << "Connecting to server at address" << address.toStdString() << std::endl;
     clientSocket = new QTcpSocket();
     clientSocket->connectToHost(address, port);
-    QByteArray protocolMessage("{\"protocol\": \"native\", \"version\": 0}");
+    QObject::connect(clientSocket, &QTcpSocket::disconnected, this, &TcpStreamHandler::onForwardServerDisconnected);
+    QObject::connect(clientSocket, &QTcpSocket::readyRead, this, &TcpStreamHandler::processForwardServerData);
+    QByteArray protocolMessage("{\"protocol\": \"native\", \"version\": 0, \"name\": \"PnID Viewer Frontend\"}");
+    //TODO: Replace this hardcoded name with something unique to the machine? kconfig?
     protocolMessage.append('\0');
     clientSocket->write(protocolMessage);
     clientSocket->waitForBytesWritten(3000);
@@ -32,7 +35,9 @@ void TcpStreamHandler::connect(const QString &address, const quint16 &port)
 void TcpStreamHandler::handleNewBackendConnection()
 {
     QTcpSocket *socket = backendServer.nextPendingConnection();
-    backendSockets.append(SocketWrapper(socket));
+    SocketWrapper wrappedSocket = SocketWrapper(socket);
+    backendSockets.append(wrappedSocket);
+    backendSocketVariants.append(QVariant::fromValue(wrappedSocket));
     if (!socket->isOpen())
     {
         //TODO: I have no idea if isOpen is the right check here
@@ -40,6 +45,7 @@ void TcpStreamHandler::handleNewBackendConnection()
         return;
     }
     emit connectedBackend();
+    emit backendSocketsChanged();
     QObject::connect(socket, &QTcpSocket::disconnected, this, [this, socket](){ onBackendDisconnected(socket); });
     //QWebSocket::connect(&socket, &QWebSocket::error, this, &WebSocketHandler::onErrored);
     //error signal seems to be special, figure out later
@@ -50,7 +56,9 @@ void TcpStreamHandler::handleNewFrontendConnection()
 {
     std::cout << "got new frontend connection" << std::endl;
     QTcpSocket *socket = frontendServer.nextPendingConnection();
-    frontendSockets.append(SocketWrapper(socket));
+    SocketWrapper wrappedSocket = SocketWrapper(socket);
+    frontendSockets.append(wrappedSocket);
+    frontendSocketVariants.append(QVariant::fromValue(wrappedSocket));
     if (!socket->isOpen())
     {
         //TODO: I have no idea if isOpen is the right check here
@@ -58,6 +66,7 @@ void TcpStreamHandler::handleNewFrontendConnection()
         return;
     }
     emit connectedFrontend();
+    emit frontendSocketsChanged();
     QObject::connect(socket, &QTcpSocket::readyRead, this, [this, socket](){ processFrontendData(socket); });
 }
 
@@ -66,7 +75,7 @@ void TcpStreamHandler::sendData(const DataPacket &packet)
     //std::cout << "sending data id: " << packet.m_id.toStdString() << " value: " << packet.m_value << std::endl << std::flush;
     for (uint16_t i = 0; i < backendSockets.length(); i++)
     {
-        backendSockets[i].socket->write(packet.toString(backendSockets[i].protocol));
+        backendSockets[i].socket->write(packet.toByteArray(backendSockets[i].protocol));
     }
 
     for (uint16_t i = 0; i < backendSockets.length(); i++)
@@ -81,19 +90,33 @@ void TcpStreamHandler::onBackendDisconnected(QTcpSocket *socket)
 {
     uint16_t socketIndex = getSocketIndex(socket);
     backendSockets.removeAt(socketIndex);
+    backendSocketVariants.removeAt(socketIndex);
     emit disconnected(backendSockets.count());
+    emit backendSocketsChanged();
     std::cout << "Disconnected" << std::endl << std::flush;
+}
+
+void TcpStreamHandler::onForwardServerDisconnected()
+{
+
 }
 
 void TcpStreamHandler::onFrontendDisconnected(QTcpSocket *socket)
 {
     uint16_t socketIndex = getSocketIndex(socket);
     frontendSockets.removeAt(socketIndex);
+    frontendSocketVariants.removeAt(socketIndex);
     emit disconnected(frontendSockets.count());
+    emit frontendSocketsChanged();
     std::cout << "Disconnected" << std::endl << std::flush;
 }
 
 void TcpStreamHandler::onBackendErrored(QAbstractSocket::SocketError error)
+{
+
+}
+
+void TcpStreamHandler::onForwardServerErrored(QAbstractSocket::SocketError error)
 {
 
 }
@@ -108,8 +131,12 @@ void TcpStreamHandler::processBackendData(QTcpSocket *socket)
     QString messageStr = socket->readAll();
     std::cout << "Got message: " << messageStr.toStdString() << std::endl << std::flush;
     //std::cout << "got message string: " << messageStr.toStdString() << std::endl << std::flush;
+    //right now creating a JsonDocument object happens twice, once here and once in processData()
+    //I'd like to not do that
     QJsonDocument message = QJsonDocument::fromJson(messageStr.toUtf8());
     uint16_t socketIndex = getSocketIndex(socket);
+
+    //protocol detection
     if (message.object().value("protocol").toString() == "native")
     {
         backendSockets[socketIndex].protocol = MessageProtocol::native;
@@ -123,16 +150,36 @@ void TcpStreamHandler::processBackendData(QTcpSocket *socket)
         //indicator to the TUST backends, this is the best I can do quickly.
         backendSockets[socketIndex].protocol = MessageProtocol::tust;
     }
+
+    processData(messageStr, backendSockets[socketIndex].protocol);
+}
+
+void TcpStreamHandler::processForwardServerData()
+{
+    QString messageStr = clientSocket->readAll();
+    std::cout << "Got forwarded message: " << messageStr.toStdString() << std::endl;
+    processData(messageStr, MessageProtocol::native); //right now it's hardcoded that only native msg protocol can forward
+}
+
+void TcpStreamHandler::processFrontendData(QTcpSocket *socket)
+{
+    //just forward whatever was sent to this.sendData to treat it like a gui interaction of the own client
+}
+
+void TcpStreamHandler::processData(const QString &msg, const MessageProtocol &protocol)
+{
+    QJsonDocument message = QJsonDocument::fromJson(msg.toUtf8());
+
+    //extracting data
     QJsonArray packetsJsonArray;
-    if (backendSockets.at(socketIndex).protocol == MessageProtocol::native)
+    if (protocol == MessageProtocol::native)
     {
         packetsJsonArray = message.object().value("packets").toArray();
     }
-    else if (backendSockets.at(socketIndex).protocol == MessageProtocol::tust)
+    else if (protocol == MessageProtocol::tust)
     {
         packetsJsonArray = message.object().value("states").toArray(); //I'm fairly sure this is not right
     }
-    //qDebug() << packetsJsonArray.count();
 
     QVector<DataPacket> packets;
     for (QJsonValueRef packetJson : packetsJsonArray)
@@ -148,11 +195,23 @@ void TcpStreamHandler::processBackendData(QTcpSocket *socket)
     std::cout << "emitting packets" << std::endl << std::flush;
     //todo: forward data to other connected frontends
     emit incomingData(packets);
+    if (clientSocket == 0)
+    {
+        //only allow forwarding to other frontends if you are not already receiving forwarded data yourself
+        //I don't want arbitrarily long "forward chains"
+        forwardToFrontends(msg);
+    }
 }
 
-void TcpStreamHandler::processFrontendData(QTcpSocket *socket)
+void TcpStreamHandler::forwardToFrontends(const QString &msg)
 {
-    //just forward whatever was sent to this.sendData to treat it like a gui interaction of the own client
+    for (uint16_t i = 0; i < frontendSockets.length(); i++)
+    {
+        std::cout << "forwarding to socket: " << msg.toStdString() << std::endl;
+        frontendSockets.at(i).socket->write(QByteArray(msg.toUtf8()).append('\0'));
+        frontendSockets.at(i).socket->waitForBytesWritten(1000);
+        //TODO: Ideally the waiting for written should happen after going through all sockets
+    }
 }
 
 uint16_t TcpStreamHandler::getSocketIndex(const QTcpSocket *socket)
