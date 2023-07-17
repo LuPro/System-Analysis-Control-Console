@@ -42,7 +42,7 @@ Item {
         Controls.CheckBox {
             id: checkbox
             text: digitalInput.label
-            onCheckStateChanged: {
+            onClicked: {
                 digitalInput.userInput(pnidElement.objectName, checkbox.checkState ? 1 : 0);
                 digitalInput.guiState = checkbox.checkState;
             }

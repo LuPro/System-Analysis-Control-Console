@@ -45,17 +45,18 @@ Kirigami.Page {
         target: tcpHandler
         function onBackendSocketsChanged() {
             console.log("backend sockets changed");
+            console.log(tcpHandler.backendSockets.length);
         }
         function onFrontendSocketsChanged() {
             console.log("frontend sockets changed");
-            console.log(tcpHandler.frontendSockets, tcpHandler.frontendSockets.modelData);
+            console.log(tcpHandler.frontendSockets.length);
         }
 
         function onConnectedBackend() {
             allBackendDisconnectWarning.visible = false;
             backendDisconnectWarning.visible = false;
         }
-        function onDisconnected(remainingConnectionCount) {
+        function onBackendDisconnected(remainingConnectionCount) {
             if (remainingConnectionCount === 0) {
                 allBackendDisconnectWarning.visible = true;
             } else {
@@ -145,9 +146,6 @@ Kirigami.Page {
 
             Repeater {
                 model: pnidHandler.pnids
-                /*onModelChanged: {
-                    pnidLoader.item.visible = true
-                }*/
 
                 Loader {
                     //id: pnidLoader
@@ -162,47 +160,72 @@ Kirigami.Page {
         id: backendsListOverlay
 
         header: Kirigami.Heading {
+            id: backendsListHeading
             text: "List of connected Backends"
         }
 
-        contentItem: RowLayout {
+        contentItem: ColumnLayout {
+            property double contentWidth: 500
+            property double contentHeight: 500
 
+            Repeater {
+                model: tcpHandler.backendSockets
+
+                RowLayout {
+                    spacing: Kirigami.Units.largeSpacing
+                    Controls.Label {
+                        text: modelData.name
+                    }
+                    Item {
+                        width: Kirigami.Units.gridUnit * 4;
+                    }
+
+                    Controls.Label {
+                        text: "Last sent data: 1s ago"
+                    }
+                }
+
+            }
         }
     }
 
     Kirigami.OverlaySheet {
         id: frontendsListOverlay
 
+
         header: Kirigami.Heading {
             text: "List of connected Frontends"
         }
 
-        contentItem: Item {
-            implicitWidth: frontendsListLayout.implicitWidth
-            implicitHeight: frontendsListLayout.implicitHeight
+        contentItem: Kirigami.FormLayout {
+            id: frontendsListLayout
+            implicitWidth: childrenRect.width
+            implicitHeight: childrenRect.height + exclusiveControlSwitch.height + frontendsListSeparator.height
 
-            Kirigami.FormLayout {
-                id: frontendsListLayout
-                Controls.Switch {
-                    text: "Disable UI interactions for connected frontends"
+            Controls.Switch {
+                id: exclusiveControlSwitch
+                text: "Disable UI interactions for connected frontends"
+                position: tcpHandler.exclusiveControl
+                onPositionChanged: {
+                    tcpHandler.setExclusiveControl(position);
                 }
-                Kirigami.CardsListView {
-                    model: tcpHandler.frontendSockets
-                    implicitWidth: frontendsList.implicitWidth
-                    implicitHeight: frontendsList.implicitHeight
+            }
 
-                    Kirigami.AbstractCard {
-                        contentItem: Item {
-                            implicitWidth: frontendsList.implicitWidth
-                            implicitHeight: frontendsList.implicitHeight
+            Kirigami.Separator {
+                id: frontendsListSeparator
+                Layout.fillWidth: true
+            }
 
-                            ColumnLayout {
-                                id: frontendsList
-                                Controls.Label {
-                                    text: "Hello"
-                                }
-                            }
-                        }
+            Kirigami.CardsListView {
+                id: cardsList
+                model: tcpHandler.frontendSockets
+                implicitWidth: contentItem.childrenRect.width
+                implicitHeight: contentItem.childrenRect.height
+
+                delegate: Kirigami.AbstractCard {
+
+                    footer: Controls.Label {
+                        text: modelData.name !== "name_unknown" ? modelData.name : "Frontend #" + index
                     }
                 }
             }

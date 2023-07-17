@@ -35,17 +35,17 @@ Item {
     property string _formattedValue //this is only for internal use
 
     function isInTolerance(measurement, reference) {
-        console.log("check is in tolerance", measurement, reference)
+        //console.log("check is in tolerance", measurement, reference)
         if (!checkSensTolerance || measurement === reference) {
-            console.log("is in tolerance");
+            //console.log("is in tolerance");
             return true;
         }
-        console.log("is not in tolerance");
+        //console.log("is not in tolerance");
         return false;
     }
 
     function applyStyling() {
-        console.log("applying styling", value, setState);
+        //console.log("applying styling", value, setState);
         if (value > 0) {
             triangleRight.strokeColor = "#00aeff";
             triangleRight.fillColor = "transparent";
@@ -88,6 +88,10 @@ Item {
         popup.title = displayName;
     }
 
+    onGuiStateChanged: {
+        console.log("gui state changed in pnid element");
+    }
+
     onSetStateChanged: {
         applyStyling();
     }
@@ -123,6 +127,13 @@ Item {
                 value: pnidElement.value
                 guiState: pnidElement.guiState
                 setState: pnidElement.setState
+            }
+            Graph {
+                id: graphDisplay
+                label: "Cool Graph " + pnidElement.displayName
+                value: pnidElement.value
+
+                Layout.fillWidth: true
             }
         }
     }

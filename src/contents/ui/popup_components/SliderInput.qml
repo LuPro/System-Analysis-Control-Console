@@ -21,7 +21,8 @@ Item {
     //TODO: I don't like that the tolerance here can be different to the pnid tolerance
 
     onGuiStateChanged: {
-        //checkbox.checked = guiState;
+        console.log("gui state changed", guiState);
+        slider.value = guiState;
         checkDeviation();
     }
     onValueChanged: {
@@ -64,7 +65,7 @@ Item {
                 implicitHeight: Kirigami.Units.gridUnit * 1.1
 
                 //tickmarksEnabled: stepSize > 0 && ((max - min) / stepSize) <= 10 ? true : false
-                onValueChanged: {
+                onMoved: {
                     sliderInput.userInput(pnidElement.objectName, slider.value);
                     sliderInput.guiState = slider.value;
                 }

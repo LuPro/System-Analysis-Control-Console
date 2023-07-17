@@ -17,15 +17,32 @@
 
 #include "common.h"
 
-struct SocketWrapper {
+enum SocketType {
+    backendSocket,
+    frontendSocket
+};
+
+class SocketWrapper {
     Q_GADGET
+    Q_PROPERTY (QString name MEMBER name)
 
 public:
     QTcpSocket *socket;
     MessageProtocol protocol;
+    QString name;
 
-    inline SocketWrapper(QTcpSocket *socket = 0, const MessageProtocol &protocol = MessageProtocol::undefined)
-        : socket(socket), protocol(protocol) {}
+    inline SocketWrapper(QTcpSocket *socket = 0,
+                         const MessageProtocol &protocol = MessageProtocol::undefined,
+                         const QString &name = "name_unknown")
+        : socket(socket), protocol(protocol), name(name) {}
+
+    inline bool operator=(const SocketWrapper &socketWrapper) {
+        if (socket == socketWrapper.socket && protocol == socketWrapper.protocol && name == socketWrapper.name)
+        {
+            return true;
+        }
+        return false;
+    };
 };
 
 Q_DECLARE_METATYPE(SocketWrapper)
@@ -40,20 +57,29 @@ class TcpStreamHandler : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QVariantList backendSockets MEMBER backendSocketVariants NOTIFY backendSocketsChanged)
-    Q_PROPERTY(QVariantList frontendSockets MEMBER backendSocketVariants NOTIFY frontendSocketsChanged)
+    Q_PROPERTY(QVariantList frontendSockets MEMBER frontendSocketVariants NOTIFY frontendSocketsChanged)
+    Q_PROPERTY(bool exclusiveControl MEMBER exclusiveControl NOTIFY exclusiveControlChanged)
 
 public:
-    TcpStreamHandler();
+    explicit TcpStreamHandler(QObject *parent = nullptr);
 
 public slots:
     void start(const quint16 &port = 3000, const quint16 &forwardPort = 3003);
 
     void connect(const QString &address, const quint16 &port);
 
+    //TODO: Consider renaming to sendDataToBackends()
     void sendData(const DataPacket &packet);
 
     inline bool isClientMode() {
         return clientSocket ? true : false;
+    }
+
+    inline void setExclusiveControl(const bool &exclusiveControl) {
+        this->exclusiveControl = exclusiveControl;
+        forwardExclusiveControl();
+        emit exclusiveControlChanged();
+        std::cout << "exclusive control changed" << exclusiveControl << std::endl;
     }
 
 private slots:
@@ -69,17 +95,21 @@ private slots:
     void onForwardServerDisconnected();
     void onFrontendDisconnected(QTcpSocket *socket);
 
-    void onBackendErrored(QAbstractSocket::SocketError error);
+    /*void onBackendErrored(QAbstractSocket::SocketError error);
     void onForwardServerErrored(QAbstractSocket::SocketError error);
-    void onFrontendErrored(QAbstractSocket::SocketError error);
+    void onFrontendErrored(QAbstractSocket::SocketError error);*/
 
+    //backend -> [frontend]
     void processBackendData(QTcpSocket *socket);
+    //forward server -> [frontend]
     void processForwardServerData();
+    //frontend -> [forward server]
     void processFrontendData(QTcpSocket *socket);
 
 signals:
     void incomingData(const QVector<DataPacket> &packets);
-    void disconnected(quint64 remainingConnectionCount);
+    void frontendDisconnected(quint64 remainingConnectionCount);
+    void backendDisconnected(quint64 remainingConnectionCount);
     void connectedBackend(); //when a new backend connects
     void connectedFrontend(); //when a new frontend connects
     void connectedClientMode(); //when own client connects as client mode
@@ -87,18 +117,29 @@ signals:
     void backendSocketsChanged();
     void frontendSocketsChanged();
 
+    void exclusiveControlChanged();
+
 private:
-    void processData(const QString &msg, const MessageProtocol &protocol);
+    //parse byte array to packet
+    QVector<DataPacket> parseData(const QString &msg, const MessageProtocol &protocol);
+    //parse packet type field from json into enum
+    PacketType parsePacketType(const QString &packetTypeStr);
+
+    //whether or not the main client has exclusive control or others can also send inputs
+    //if clientSocket != 0 and exclusiveControl == true -> no pnid inputs allowed
+    bool exclusiveControl = false;
+    //notifies other connected frontends if exlusive control setting changed
+    void forwardExclusiveControl(const SocketWrapper *socket = 0);
     void forwardToFrontends(const QString &msg);
 
-    uint16_t getSocketIndex(const QTcpSocket *socket);
+    uint16_t getSocketIndex(const SocketType &socketType, const QTcpSocket *socket);
 
     QTcpServer backendServer; //server handling backend connections
     QTcpServer frontendServer; //server handling frontend connections
     QVector<SocketWrapper> backendSockets; //list of connected backends
-    QList<QVariant> backendSocketVariants; //list of connected backends as variants to pass to QML
+    QVariantList backendSocketVariants; //list of connected backends as variants to pass to QML
     QVector<SocketWrapper> frontendSockets; //list of connected frontend clients
-    QList<QVariant> frontendSocketVariants; //list of connected backends as variants to pass to QML
+    QVariantList frontendSocketVariants; //list of connected backends as variants to pass to QML
     QTcpSocket *clientSocket = 0; //socket for if this instance is in client mode itself
 };
 

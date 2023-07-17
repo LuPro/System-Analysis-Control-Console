@@ -13,6 +13,7 @@
 #include "pnidhandler.h"
 #include "tcpstreamhandler.h"
 #include "common.h"
+#include "graphdatahandler.h"
 
 /*void addAboutInfo()
 {
@@ -56,6 +57,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("tcpHandler", &tcpHandler);
     PnidHandler pnidHandler(&engine, app.applicationDirPath());
     engine.rootContext()->setContextProperty("pnidHandler", &pnidHandler);
+    qmlRegisterType<GraphDataHandler>("com.tust.graphs", 1, 0, "GraphDataHandler"); // TODO: think of a better name
 
     engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

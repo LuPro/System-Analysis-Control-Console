@@ -79,11 +79,29 @@ void PnidHandler::processPackets(const QVector<DataPacket> &packets)
             std::cout << "Couldn't find PnID element with id: " << packet.m_id.toStdString() << std::endl << std::flush;
             continue;
         }
-        pnidElement->setProperty("value", packet.m_value);
+        switch(packet.m_packetType)
+        {
+            case PacketType::feedback:
+            std::cout << "sending a feedback value" << std::endl;
+                pnidElement->setProperty("value", packet.m_value);
+                break;
+            case PacketType::guiState:
+                std::cout << "sending a gui state" << std::endl;
+                pnidElement->setProperty("guiState", packet.m_value);
+                break;
+            case PacketType::hardwareState:
+                std::cout << "sending a hardware state" << std::endl;
+                pnidElement->setProperty("setState", packet.m_value);
+                break;
+            default:
+                std::cerr << "Encountered unknown packet type: " << packet.m_packetType << std::endl;
+                break;
+        }
     }
 }
 
 void PnidHandler::handleUserInput(const QString &id, const double &value)
 {
-    emit userInput(DataPacket(id, value));
+    std::cout << "Got user input" << std::endl;
+    emit userInput(DataPacket(id, value, PacketType::guiState));
 }
