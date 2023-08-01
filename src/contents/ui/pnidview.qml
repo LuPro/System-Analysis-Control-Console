@@ -30,13 +30,21 @@ Kirigami.Page {
             },
 
             Kirigami.Action {
+                //TODO: Some sort of tooltip or info about what the warning is about would be great
+                visible: tcpHandler.exclusiveControl
+                displayComponent: Kirigami.Icon {
+                    source: tcpHandler.isPrimary ? "documentinfo" : "data-warning"
+                }
+            }/*,
+
+            Kirigami.Action {
                 text: "Connect to other backend"
                 icon.name: "network-connect"
                 shortcut: StandardKey.New
                 onTriggered: {
                     connectOverlay.open();
                 }
-            }
+            }*/
 
         ]
     }
@@ -63,6 +71,13 @@ Kirigami.Page {
                 backendDisconnectWarning.visible = true;
             }
         }
+
+        function onExclusiveControlChanged() {
+            if (!tcpHandler.isPrimary) {
+                exclusiveControlWarning.visible = tcpHandler.exclusiveControl;
+            }
+        }
+
         Component.onCompleted: {
             if (tcpHandler.isClientMode()) {
                 allBackendDisconnectWarning.visible = false;
@@ -109,6 +124,16 @@ Kirigami.Page {
             showCloseButton: true
 
             text: qsTr("Connected to a forward server, backend disconnects will not be detected.")
+        }
+
+        Kirigami.InlineMessage {
+            id: exclusiveControlWarning
+            Layout.fillWidth: true
+            visible: false
+            type: Kirigami.MessageType.Warning
+            showCloseButton: true
+
+            text: qsTr("Primary client has switched to exclusive control. Until this is switched off you cannot send commands to hardware.")
         }
 
         Controls.TabBar {
@@ -233,6 +258,7 @@ Kirigami.Page {
     }
 
     Kirigami.OverlaySheet {
+        //TODO: Currently unused. what to do about that?
         id: connectOverlay
 
         header: Kirigami.Heading {

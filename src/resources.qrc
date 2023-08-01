@@ -18,5 +18,6 @@
         <file alias="DigitalInput.qml">contents/ui/popup_components/DigitalInput.qml</file>
         <file alias="SliderInput.qml">contents/ui/popup_components/SliderInput.qml</file>
         <file alias="Graph.qml">contents/ui/popup_components/Graph.qml</file>
+        <file alias="NumberInput.qml">contents/ui/popup_components/NumberInput.qml</file>
     </qresource>
 </RCC>

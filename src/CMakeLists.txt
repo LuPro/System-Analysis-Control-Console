@@ -14,4 +14,18 @@ add_executable(pnid_viewer
     resources.qrc
 )
 
-target_link_libraries(pnid_viewer Qt5::Quick Qt5::Qml Qt5::Gui Qt5::QuickControls2 Qt5::Widgets Qt5::WebSockets Qt5::Charts KF5::Kirigami2 KF5::I18n)
+target_link_libraries(
+    pnid_viewer
+    Qt5::Quick
+    Qt5::Qml
+    Qt5::Gui
+    Qt5::QuickControls2
+    Qt5::Widgets
+    Qt5::WebSockets
+    Qt5::Charts
+    KF5::Kirigami2
+    KF5::I18n
+    KF5::CoreAddons
+    KF5::ConfigCore
+    KF5::ConfigGui
+)

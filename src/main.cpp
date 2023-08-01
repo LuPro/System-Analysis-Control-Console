@@ -5,8 +5,10 @@
 #include <QUrl>
 #include <KLocalizedContext>
 #include <KLocalizedString>
-//#include <KCoreAddons/kaboutdata.h>
+#include <KAboutData>
 #include <QQmlContext>
+#include <QQmlEngine>
+#include <KConfig>
 
 #include <QDebug>
 
@@ -15,35 +17,54 @@
 #include "common.h"
 #include "graphdatahandler.h"
 
-/*void addAboutInfo()
+#define VERSION_STRING "0.1"
+#define APP_URI "com.tust.pnidviewer"
+
+void addAboutInfo()
 {
-    KAboutData aboutData(
-        QStringLiteral("PnID Viewer"),
-        i18nc("@title", "PnID Viewer About"),
-        QStringLiteral("0.1"),
+    KAboutData about(
+        QStringLiteral("pnidviewer"),
+        i18nc("@title", "PnID Viewer"),
+        QStringLiteral(VERSION_STRING),
         i18n("Application for viewing and interacting with PnIDs"),
         KAboutLicense::LGPL,
-        i18n("(c) 2023"));
+        i18n("© 2023 Luis Büchi")
+    );
 
-    aboutData.addAuthor(
+    about.addAuthor(
         i18nc("@info:credit", "Luis Büchi"),
         i18nc("@info:credit", "Frontend & Backend"),
-        QStringLiteral("some@example.com"),
-        QStringLiteral("https://example.com"));
+        QStringLiteral("some@example.com")
+    );
+
+    about.setBugAddress("https://github.com/LuPro/PnID-Viewer/issues");
 
     // Set aboutData as information about the app
-    KAboutData::setApplicationData(aboutData);
+    KAboutData::setApplicationData(about);
 
-}*/
+    qmlRegisterSingletonType(
+        APP_URI,
+        0, 1,
+        "About",
+        [](QQmlEngine* engine, QJSEngine *) -> QJSValue {
+            return engine->toScriptValue(KAboutData::applicationData());
+        }
+    );
+}
 
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     QApplication app(argc, argv);
+
     KLocalizedString::setApplicationDomain("pnid_viewer");
-    QCoreApplication::setOrganizationName(QStringLiteral("KDE"));
-    QCoreApplication::setOrganizationDomain(QStringLiteral("kde.org"));
+    QCoreApplication::setOrganizationName(QStringLiteral("TUST"));
+    QCoreApplication::setOrganizationDomain(QStringLiteral("tust.at"));
     QCoreApplication::setApplicationName(QStringLiteral("PnID Viewer"));
+
+    addAboutInfo();
+
 
     //this block is for antialiasing, but ideally I'd like that to not be for the entire app,
     //only for the pnid layer. ideally ideally it should already be drawn with subpixel accuracy since it's vectors
@@ -64,6 +85,8 @@ int main(int argc, char *argv[])
 
     QObject::connect(&tcpHandler, &TcpStreamHandler::incomingData, &pnidHandler, &PnidHandler::processPackets);
     QObject::connect(&pnidHandler, &PnidHandler::userInput, &tcpHandler, &TcpStreamHandler::sendData);
+
+    engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
 
     if (engine.rootObjects().isEmpty()) {
         return -1;

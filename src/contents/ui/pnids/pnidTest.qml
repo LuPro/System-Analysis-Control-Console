@@ -32,9 +32,11 @@ Item {
     }
 
     ValveSolenoid {
-        id: testSolenoid2
-        objectName: "testSolenoid2"
-        displayName: "Solenoid 2"
+        id: testGreenLight
+        //objectName: "4:01_Distribution/4:Indicators/4:Lights/4:Yellow"
+        objectName: "4:01_Distribution/4:Indicators/4:StationState/4:Manual"
+        displayName: "Yellow Light"
+        checkSensTolerance: false
         x: 100
         y: 30
     }

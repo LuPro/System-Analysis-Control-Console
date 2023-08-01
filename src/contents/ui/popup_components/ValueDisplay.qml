@@ -7,6 +7,9 @@ import org.kde.kirigami 2.20 as Kirigami
 Item {
     id: valueDisplay
 
+    implicitWidth: mainLayout.implicitWidth
+    implicitHeight: mainLayout.implicitHeight
+
     property string label: "Value";
     property string value;
 
@@ -17,6 +20,7 @@ Item {
     }
 
     RowLayout {
+        id: mainLayout
         Controls.Label {
             text: valueDisplay.label ? valueDisplay.label + ":" : ""
         }

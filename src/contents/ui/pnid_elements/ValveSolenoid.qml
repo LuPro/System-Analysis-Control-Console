@@ -109,7 +109,7 @@ Item {
         visible: false
 
         ColumnLayout {
-            spacing: Kirigami.Units.largeSpacing
+            spacing: Kirigami.Units.smallSpacing
 
             ValueDisplay {
                 id: valueDisplay
@@ -127,6 +127,13 @@ Item {
                 value: pnidElement.value
                 guiState: pnidElement.guiState
                 setState: pnidElement.setState
+            }
+            NumberInput {
+                id: numberInput
+                value: pnidElement.value
+                guiState: pnidElement.guiState
+                setState: pnidElement.setState
+                unit: "kg"
             }
             Graph {
                 id: graphDisplay

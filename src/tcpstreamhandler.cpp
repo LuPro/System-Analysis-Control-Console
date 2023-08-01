@@ -24,6 +24,7 @@ void TcpStreamHandler::connect(const QString &address, const quint16 &port)
     std::cout << "Connecting to server at address: " << address.toStdString() << std::endl;
     clientSocket = new QTcpSocket();
     clientSocket->connectToHost(address, port);
+    //TODO: check whether connection succeeded
     QObject::connect(clientSocket, &QTcpSocket::disconnected, this, &TcpStreamHandler::onForwardServerDisconnected);
     QObject::connect(clientSocket, &QTcpSocket::readyRead, this, &TcpStreamHandler::processForwardServerData);
     QByteArray protocolMessage("{\"protocol\": \"native\", \"version\": 0, \"name\": \"PnID Viewer Frontend\"}");
@@ -31,6 +32,8 @@ void TcpStreamHandler::connect(const QString &address, const quint16 &port)
     protocolMessage.append('\0');
     clientSocket->write(protocolMessage);
     clientSocket->waitForBytesWritten(3000);
+    isPrimary = false;
+    emit isPrimaryChanged();
 }
 
 void TcpStreamHandler::handleNewBackendConnection()
@@ -198,6 +201,7 @@ void TcpStreamHandler::processForwardServerData()
     if (message.object().value("exclusiveControl").isUndefined() == false)
     {
         exclusiveControl = message.object().value("exclusiveControl").toBool();
+        emit exclusiveControlChanged();
         std::cout << "Changed exclusive control mode to: " << exclusiveControl << std::endl;
         return;
     }

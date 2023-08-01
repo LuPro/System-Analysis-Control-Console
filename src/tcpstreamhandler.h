@@ -59,6 +59,7 @@ class TcpStreamHandler : public QObject
     Q_PROPERTY(QVariantList backendSockets MEMBER backendSocketVariants NOTIFY backendSocketsChanged)
     Q_PROPERTY(QVariantList frontendSockets MEMBER frontendSocketVariants NOTIFY frontendSocketsChanged)
     Q_PROPERTY(bool exclusiveControl MEMBER exclusiveControl NOTIFY exclusiveControlChanged)
+    Q_PROPERTY(bool isPrimary MEMBER isPrimary NOTIFY isPrimaryChanged)
 
 public:
     explicit TcpStreamHandler(QObject *parent = nullptr);
@@ -118,6 +119,7 @@ signals:
     void frontendSocketsChanged();
 
     void exclusiveControlChanged();
+    void isPrimaryChanged();
 
 private:
     //parse byte array to packet
@@ -130,6 +132,10 @@ private:
     bool exclusiveControl = false;
     //notifies other connected frontends if exlusive control setting changed
     void forwardExclusiveControl(const SocketWrapper *socket = 0);
+    //whether or not the client is the primary client, can be seen from clientSocket == 0
+    //but separate bool for easier access, especially for GUI
+    bool isPrimary = true;
+
     void forwardToFrontends(const QString &msg);
 
     uint16_t getSocketIndex(const SocketType &socketType, const QTcpSocket *socket);

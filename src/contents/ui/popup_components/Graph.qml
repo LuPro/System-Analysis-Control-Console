@@ -8,10 +8,9 @@ import com.tust.graphs 1.0
 
 Item {
     id: graphDisplay
-    implicitWidth: chart.implicitWidth
-    implicitHeight: chart.implicitHeight
-    width: 350
-    height: 200
+
+    implicitWidth: mainLayout.implicitWidth
+    implicitHeight: mainLayout.implicitHeight
 
     property string label: "Value";
     property string value;
@@ -43,55 +42,60 @@ Item {
         name: pnidElement.displayName
     }
 
-    ChartView {
-        width: parent.width
-        height: parent.height
+    RowLayout {
+        id: mainLayout
+        ChartView {
+            id: chart
+            property double nextValue: 0;
 
-        property double nextValue: 0;
+            implicitWidth: 350
+            implicitHeight: 200
 
-        id: chart
-        animationOptions: ChartView.NoAnimation
-        antialiasing: true
+            animationOptions: ChartView.NoAnimation
+            antialiasing: true
 
-        backgroundColor: "transparent"
-        titleColor: Kirigami.Theme.textColor
-        legend.color: Kirigami.Theme.textColor
-        legend.labelColor: Kirigami.Theme.textColor
-        legend.borderColor: Kirigami.Theme.textColor
-        legend.visible: false //re-enable if/when I add other lines like set point and gui state to the graph
-        dropShadowEnabled: false
+            backgroundColor: "transparent"
+            titleColor: Kirigami.Theme.textColor
+            legend.color: Kirigami.Theme.textColor
+            legend.labelColor: Kirigami.Theme.textColor
+            legend.borderColor: Kirigami.Theme.textColor
+            legend.visible: false //re-enable if/when I add other lines like set point and gui state to the graph
+            dropShadowEnabled: false
 
-        Component.onCompleted: {
-            refreshTimer.running = true
+            Component.onCompleted: {
+                refreshTimer.running = true
+            }
+
+            ValueAxis {
+                id: axisY
+                min: 0
+                max: 100
+                color: Kirigami.Theme.textColor
+                shadesVisible: false
+                gridLineColor: Kirigami.Theme.disabledTextColor
+                labelsColor: Kirigami.Theme.textColor
+                labelsFont.weight: Font.Bold
+            }
+
+            ValueAxis {
+                id: axisX
+                min: dataHandler.rangeOffset
+                max: graphDisplay.timeRange * 60 / (graphDisplay.refreshInterval / 1000.0) + dataHandler.rangeOffset
+                color: Kirigami.Theme.textColor
+                shadesVisible: false
+                gridLineColor: Kirigami.Theme.disabledTextColor
+                labelsVisible: false
+            }
+
+            LineSeries {
+                id: graphData
+                name: graphDisplay.label
+                axisX: axisX
+                axisY: axisY
+                useOpenGL: true
+            }
         }
 
-        ValueAxis {
-            id: axisY
-            min: 0
-            max: 100
-            color: Kirigami.Theme.textColor
-            shadesVisible: false
-            gridLineColor: Kirigami.Theme.disabledTextColor
-            labelsColor: Kirigami.Theme.textColor
-            labelsFont.weight: Font.Bold
-        }
-
-        ValueAxis {
-            id: axisX
-            min: dataHandler.rangeOffset
-            max: graphDisplay.timeRange * 60 / (graphDisplay.refreshInterval / 1000.0) + dataHandler.rangeOffset
-            color: Kirigami.Theme.textColor
-            shadesVisible: false
-            gridLineColor: Kirigami.Theme.disabledTextColor
-            labelsVisible: false
-        }
-
-        LineSeries {
-            id: graphData
-            name: graphDisplay.label
-            axisX: axisX
-            axisY: axisY
-            useOpenGL: true
-        }
     }
+
 }

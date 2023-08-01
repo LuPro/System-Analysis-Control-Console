@@ -7,6 +7,9 @@ import org.kde.kirigami 2.20 as Kirigami
 Item {
     id: sliderInput
 
+    implicitWidth: mainLayout.implicitWidth
+    implicitHeight: mainLayout.implicitHeight
+
     property string label: ""
     property double guiState
     property double setState
@@ -51,10 +54,9 @@ Item {
 
     Layout.margins: Kirigami.Units.largeSpacing
 
-
     RowLayout {
+        id: mainLayout
         ColumnLayout {
-            //Controls.Slider {}
             Controls.Slider {
                 id: slider
                 from: sliderInput.min
@@ -62,7 +64,7 @@ Item {
                 stepSize: sliderInput.stepSize
                 snapMode: Controls.Slider.SnapAlways
 
-                implicitHeight: Kirigami.Units.gridUnit * 1.1
+                implicitHeight: handle.implicitHeight
 
                 //tickmarksEnabled: stepSize > 0 && ((max - min) / stepSize) <= 10 ? true : false
                 onMoved: {
@@ -132,7 +134,7 @@ Item {
         ColumnLayout {
             Kirigami.Chip {
                 id: sliderLabel
-                Layout.topMargin: -4
+                Layout.topMargin: -5
                 checked: false
                 checkable: false
                 text: Math.round(sliderInput.guiState * 100) / 100

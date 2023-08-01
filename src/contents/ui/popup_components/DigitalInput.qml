@@ -7,6 +7,9 @@ import org.kde.kirigami 2.20 as Kirigami
 Item {
     id: digitalInput
 
+    implicitWidth: mainLayout.implicitWidth
+    implicitHeight: mainLayout.implicitHeight
+
     property string label: ""
     property bool guiState
     property bool setState
@@ -39,6 +42,7 @@ Item {
     Layout.margins: Kirigami.Units.largeSpacing
 
     RowLayout {
+        id: mainLayout
         Controls.CheckBox {
             id: checkbox
             text: digitalInput.label
