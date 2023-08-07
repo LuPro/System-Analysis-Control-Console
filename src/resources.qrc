@@ -6,9 +6,13 @@
     </qresource>
     <qresource prefix="/components">
         <file alias="BackendConnection.qml">contents/ui/components/BackendConnection.qml</file>
+        <file alias="PnidUiLabel.qml">contents/ui/components/PnidUiLabel.qml</file>
+        <file alias="PnidSvgLabel">contents/ui/components/PnidSvgLabel.qml</file>
     </qresource>
     <qresource prefix="/pnid_elements">
         <file alias="ValveSolenoid.qml">contents/ui/pnid_elements/ValveSolenoid.qml</file>
+        <file alias="Tank.qml">contents/ui/pnid_elements/Tank.qml</file>
+        <file alias="Container.qml">contents/ui/pnid_elements/Container.qml</file>
     </qresource>
     <qresource prefix="/pnids">
         <file>contents/ui/pnids/pnidTest.qml</file>

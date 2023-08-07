@@ -4,11 +4,12 @@ import QtQuick.Layouts 1.15
 import QtQuick.Shapes 1.15
 import org.kde.kirigami 2.20 as Kirigami
 import "../popup_components"
+import "../components"
 
 Item {
     id: pnidElement
-    width: 48
-    height: 58
+    width: 400
+    height: 500
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
@@ -16,7 +17,7 @@ Item {
     property double setState
     property double value
     property int strokeWidth: 2
-    property string labelPosition: "bottom"
+    property string valuePosition: "bottom"
     property int rotation: 0 //rotation id: 0, 1, 2, 3 -> 90° steps
 
     property string unit
@@ -33,6 +34,7 @@ Item {
     property var popupValues //list of double
 
     property string _formattedValue //this is only for internal use
+    property int _scaledStrokeWidth: strokeWidth / pnid.zoomScale
 
     function isInTolerance(measurement, reference) {
         //console.log("check is in tolerance", measurement, reference)
@@ -145,19 +147,8 @@ Item {
         }
     }
 
-    Controls.Label {
+    PnidUiLabel {
         text: pnidElement._formattedValue
-        visible: pnidElement.labelPosition == "none" ? false : true
-        anchors.margins: (pnidElement.labelPosition == "bottom") || (pnidElement.labelPosition == "top")
-                         ? 5 : 8
-        anchors.top: pnidElement.labelPosition == "bottom" ? pnidElement.bottom : undefined
-        anchors.bottom: pnidElement.labelPosition == "top" ? pnidElement.top : undefined
-        anchors.left: pnidElement.labelPosition == "right" ? pnidElement.right : undefined
-        anchors.right: pnidElement.labelPosition == "left" ? pnidElement.left : undefined
-        anchors.horizontalCenter: (pnidElement.labelPosition == "bottom") || (pnidElement.labelPosition == "top")
-                                  ? pnidElement.horizontalCenter : undefined
-        anchors.verticalCenter: (pnidElement.labelPosition == "left") || (pnidElement.labelPosition == "right")
-                                  ? pnidElement.verticalCenter : undefined
     }
 
     Shape {
@@ -189,87 +180,78 @@ Item {
 
         ShapePath {
             id: triangleRight
-            strokeWidth: pnidElement.strokeWidth
+            strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 24;  startY: 36
+            startX: 400;  startY: 200
             PathLine {
-                x: 48; y: 58
+                x: 200; y: 350
             }
             PathLine {
-                x: 48; y: 14
+                x: 400; y: 500
             }
             PathLine {
-                x: 24; y: 36
+                x: 400; y: 200
             }
             //PathSvg { path: "L 150 50 L 100 150 z" }
         }
         ShapePath {
             id: triangleLeft
-            strokeWidth: pnidElement.strokeWidth
+            strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 0;  startY: 14
+            startX: 200;  startY: 350
             PathLine {
-                x: 0; y: 58
+                x: 0; y: 200
             }
             PathLine {
-                x: 24; y: 36
+                x: 0; y: 500
             }
             PathLine {
-                x: 0; y: 14
+                x: 200; y: 350
             }
         }
         ShapePath {
             id: stem
-            strokeWidth: pnidElement.strokeWidth
+            strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 24;  startY: 36
+            startX: 200;  startY: 200
             PathLine {
-                x: 24; y: 19
+                x: 200; y: 350
             }
         }
         ShapePath {
             id: square
-            strokeWidth: pnidElement.strokeWidth
+            strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 14;  startY: 0
+            startX: 100;  startY: 0
             PathLine {
-                x: 34; y: 0
+                x: 300; y: 0
             }
             PathLine {
-                x: 34; y: 19
+                x: 300; y: 200
             }
             PathLine {
-                x: 14; y: 19
+                x: 100; y: 200
             }
             PathLine {
-                x: 14; y: 0
+                x: 100; y: 0
             }
         }
-        ShapePath {
-            id: label
-            strokeWidth: pnidElement.strokeWidth == 1 ? 1 : pnidElement.strokeWidth / 2
-            strokeColor: Kirigami.Theme.textColor
-            strokeStyle: ShapePath.SolidLine
-            fillColor: Kirigami.Theme.textColor
-            PathText {
-                x: 20
-                y: 4
-                font.family: "Montserrat"
-                font.pixelSize: 15
-                text: "S"
-            }
+        PnidSvgLabel {
+            text: "S"
+            x: 155
+            y: 45
         }
     }
 }

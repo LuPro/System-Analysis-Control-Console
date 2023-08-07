@@ -154,9 +154,10 @@ Kirigami.Page {
             }
         }
 
-        ValveSolenoid {
+        /*ValveSolenoid {
+            transform: Scale {origin.x: 0; origin.y: 0; xScale: 0.15; yScale: 0.15}
             displayName: "Solenoid New"
-        }
+        }*/
 
         StackLayout {
             id: pnidTabsContainer
@@ -173,9 +174,11 @@ Kirigami.Page {
                 model: pnidHandler.pnids
 
                 Loader {
-                    //id: pnidLoader
+                    id: pnidLoader
                     objectName: modelData.name
                     source: modelData.filePath
+                    transform: Scale {origin.x: 0; origin.y: 0; xScale: 0.125; yScale: 0.125}
+                    //transform: Scale {origin.x: 0; origin.y: 0; xScale: 0.5; yScale: 0.5}
                 }
             }
         }
