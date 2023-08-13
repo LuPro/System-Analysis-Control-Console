@@ -16,7 +16,7 @@ Item {
     property double guiState
     property double setState
     property double value
-    property double maxValue: 100
+    property double maxValue: 1 //TODO: this refers to the ejector "length" (the ejector is "digital" here), but looks like it refers to count of container
     property int strokeWidth: 2
     property string valuePosition: "bottom"
     property int rotation: 0 //rotation id: 0, 1, 2, 3 -> 90° steps
@@ -28,8 +28,11 @@ Item {
     property bool checkSensTolerance: true
 
     property bool disablePopup: false
-    //popup lists are for elements that aren't following the main value of the pnid element
+    //sub objects are for elements that aren't following the main value of the pnid element
     //eg: having a speed setting on a servo additionally to its position slider
+
+    //list of available sub objects (human readable). only needed for eventual UI builder
+    property var subObjectSlots: ["Ejector Extended", "Ejector Retracted"]
     property var subObjectIds //list of strings
     property var subObjectGuiStates //list of double
     property var subObjectSetStates //list of double
@@ -39,14 +42,15 @@ Item {
     property int _scaledStrokeWidth: strokeWidth / pnid.zoomScale
 
     Component.onCompleted: {
-        piston.updatePistonPosition(0);
-        for (let subObject of subObjectIds) {
-            pnidHandler.registerSubObject(pnidElement.objectName, subObject);
-        }
         subObjectGuiStates = Array(subObjectIds.length).fill(undefined);
         subObjectSetStates = Array(subObjectIds.length).fill(undefined);
         subObjectValues = Array(subObjectIds.length).fill(undefined);
-        console.log("set up sub object gui states", subObjectGuiStates);
+
+        for (let subObject of subObjectIds) {
+            pnidHandler.registerSubObject(pnidElement.objectName, subObject);
+        }
+
+        piston.updatePistonPosition(0);
     }
 
     function setSubObjectGuiState(subId: string, subValue: double) {
@@ -88,8 +92,6 @@ Item {
 
     function applyStyling() {
         //console.log("applying styling", value, setState);
-        console.log("styling for magazine ejector not yet done");
-        piston.updatePistonPosition(value/maxValue);
     }
 
     onDisplayNameChanged: {
@@ -118,7 +120,7 @@ Item {
 
     onSubObjectValuesChanged: {
         console.log("sub object values changed", subObjectValues);
-        piston.updatePistonPosition(subObjectValues[0]);
+        piston.updatePistonPosition(subObjectValues[0]/maxValue);
     }
 
     Kirigami.ApplicationWindow {
@@ -148,6 +150,7 @@ Item {
 
     PnidUiLabel {
         text: pnidElement._formattedValue
+        position: pnidElement.valuePosition
     }
 
     Shape {
@@ -177,6 +180,27 @@ Item {
             }
         }
 
+        ShapePath {
+            id: content
+            strokeWidth: pnidElement._scaledStrokeWidth
+            strokeColor: "transparent"
+            strokeStyle: ShapePath.SolidLine
+            fillColor: Kirigami.Theme.highlightColor
+
+            startX: 700;  startY: 300
+            PathLine {
+                x: 700; y: 300 * (1 - Math.min(Math.max(pnidElement.value, 0), 1))
+            }
+            PathLine {
+                x: 1200; y: 300 * (1 - Math.min(Math.max(pnidElement.value, 0), 1))
+            }
+            PathLine {
+                x: 1200; y: 300
+            }
+            PathLine {
+                x: 700; y: 300
+            }
+        }
         ShapePath {
             id: container
             strokeWidth: pnidElement._scaledStrokeWidth

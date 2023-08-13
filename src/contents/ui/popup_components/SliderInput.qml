@@ -10,6 +10,7 @@ Item {
     implicitWidth: mainLayout.implicitWidth
     implicitHeight: mainLayout.implicitHeight
 
+    property string objectId: pnidElement.objectName
     property string label: ""
     property double guiState
     property double setState
@@ -68,7 +69,7 @@ Item {
 
                 //tickmarksEnabled: stepSize > 0 && ((max - min) / stepSize) <= 10 ? true : false
                 onMoved: {
-                    sliderInput.userInput(pnidElement.objectName, slider.value);
+                    sliderInput.userInput(sliderInput.objectId, slider.value);
                     sliderInput.guiState = slider.value;
                 }
 

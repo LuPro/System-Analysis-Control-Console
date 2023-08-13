@@ -8,8 +8,8 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: 100
-    height: 50
+    width: 150
+    height: 75
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
@@ -35,13 +35,50 @@ Item {
     property bool disablePopup: false
     //popup lists are for elements that aren't following the main value of the pnid element
     //eg: having a speed setting on a servo additionally to its position slider
-    property var popupPacketIds //list of strings
-    property var popupGuiStates //list of double
-    property var popupSetStates //list of double
-    property var popupValues //list of double
+    property var subObjectIds //list of strings
+    property var subObjectGuiStates //list of double
+    property var subObjectSetStates //list of double
+    property var subObjectValues //list of double
 
     property string _formattedValue //this is only for internal use
     property int _scaledStrokeWidth: strokeWidth / pnid.zoomScale
+
+    Component.onCompleted: {
+        subObjectGuiStates = Array(subObjectIds.length).fill(undefined);
+        subObjectSetStates = Array(subObjectIds.length).fill(undefined);
+        subObjectValues = Array(subObjectIds.length).fill(undefined);
+
+        for (let subObject of subObjectIds) {
+            pnidHandler.registerSubObject(pnidElement.objectName, subObject);
+        }
+    }
+
+    function setSubObjectGuiState(subId: string, subValue: double) {
+        for (let i = 0; i < subObjectIds.length; i++) {
+            if (subObjectIds[i] === subId) {
+                subObjectGuiStates[i] = subValue;
+            }
+        }
+        subObjectGuiStatesChanged();
+    }
+
+    function setSubObjectSetState(subId: string, subValue: double) {
+        for (let i = 0; i < subObjectIds.length; i++) {
+            if (subObjectIds[i] === subId) {
+                subObjectSetStates[i] = subValue;
+            }
+        }
+        subObjectSetStatesChanged();
+    }
+
+    function setSubObjectValue(subId: string, subValue: double) {
+        for (let i = 0; i < subObjectIds.length; i++) {
+            if (subObjectIds[i] === subId) {
+                subObjectValues[i] = subValue;
+            }
+        }
+        subObjectValuesChanged();
+    }
 
     function isInTolerance(measurement, reference) {
         //console.log("check is in tolerance", measurement, reference)
@@ -56,9 +93,11 @@ Item {
     function applyStyling() {
         _formattedValue = value + unit;
         if (value) {
-            body.fillColor = onColor === undefined ? Kirigami.Theme.highlightColor : onColor;
+            body.fillColor = onColor === undefined ? Kirigami.Theme.neutralTextColor : onColor;
+            pnidElement._formattedValue = "On";
         } else {
-            body.fillColor = offColor === undefined ? Kirigami.Theme.highlightColor : offColor;
+            body.fillColor = offColor === undefined ? "transparent" : offColor;
+            pnidElement._formattedValue = "Off";
         }
     }
 
@@ -76,6 +115,19 @@ Item {
 
     onValueChanged: {
         applyStyling();
+    }
+
+    onSubObjectGuiStatesChanged: {
+        console.log("sub object gui states changed", subObjectGuiStates);
+    }
+
+    onSubObjectSetStatesChanged: {
+        console.log("sub object set states changed", subObjectSetStates);
+    }
+
+    onSubObjectValuesChanged: {
+        console.log("sub object values changed", subObjectValues);
+        piston.updatePistonPosition(subObjectValues[0]);
     }
 
     Kirigami.ApplicationWindow {
@@ -105,6 +157,15 @@ Item {
 
     PnidUiLabel {
         text: pnidElement._formattedValue
+        position: pnidElement.valuePosition
+    }
+
+    PnidUiLabel {
+        text: pnidElement.label
+        position: pnidElement.labelPosition
+        size: "large"
+        //TODO: this can clash with value label if set to the same position and visible, can be fixed with offsets
+        //but should be done dynamically
     }
 
     Shape {
@@ -141,18 +202,13 @@ Item {
             strokeStyle: ShapePath.SolidLine
             fillColor: pnidElement.offColor == undefined ? "transparent" : pnidElement.offColor
 
-            startX: 0;  startY: 50
+            startX: 0;  startY: 75
             PathLine {
-                x: 100; y: 50
+                x: 150; y: 75
             }
             PathSvg {
-                path: "M 100 50 A 50 50 0 0 0 0 50"
+                path: "M 150 75 A 75 75 0 0 0 0 75"
             }
-        }
-
-        PnidSvgLabel {
-            text: pnidElement.label
-            pixelSize: 130
         }
     }
 }

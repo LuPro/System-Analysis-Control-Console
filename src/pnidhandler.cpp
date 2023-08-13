@@ -155,6 +155,10 @@ void PnidHandler::registerSubObject(const QString &parentId, const QString &subI
 }
 
 QObject *PnidHandler::findSubObjectParent(const int &activePnid, const QString &id) {
+    QList parentIds = subObjects.values(id);
+    if (parentIds.length() == 0) {
+        return nullptr;
+    }
     QString parentId = subObjects.values(id).at(0);
     return pnids.at(activePnid)->pnid->findChild<QObject*>(parentId);
 }

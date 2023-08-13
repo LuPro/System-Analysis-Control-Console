@@ -33,13 +33,50 @@ Item {
     property bool disablePopup: false
     //popup lists are for elements that aren't following the main value of the pnid element
     //eg: having a speed setting on a servo additionally to its position slider
-    property var popupPacketIds //list of strings
-    property var popupGuiStates //list of double
-    property var popupSetStates //list of double
-    property var popupValues //list of double
+    property var subObjectIds //list of strings
+    property var subObjectGuiStates //list of double
+    property var subObjectSetStates //list of double
+    property var subObjectValues //list of double
 
     property string _formattedValue //this is only for internal use
     property int _scaledStrokeWidth: strokeWidth / pnid.zoomScale
+
+    Component.onCompleted: {
+        subObjectGuiStates = Array(subObjectIds.length).fill(undefined);
+        subObjectSetStates = Array(subObjectIds.length).fill(undefined);
+        subObjectValues = Array(subObjectIds.length).fill(undefined);
+
+        for (let subObject of subObjectIds) {
+            pnidHandler.registerSubObject(pnidElement.objectName, subObject);
+        }
+    }
+
+    function setSubObjectGuiState(subId: string, subValue: double) {
+        for (let i = 0; i < subObjectIds.length; i++) {
+            if (subObjectIds[i] === subId) {
+                subObjectGuiStates[i] = subValue;
+            }
+        }
+        subObjectGuiStatesChanged();
+    }
+
+    function setSubObjectSetState(subId: string, subValue: double) {
+        for (let i = 0; i < subObjectIds.length; i++) {
+            if (subObjectIds[i] === subId) {
+                subObjectSetStates[i] = subValue;
+            }
+        }
+        subObjectSetStatesChanged();
+    }
+
+    function setSubObjectValue(subId: string, subValue: double) {
+        for (let i = 0; i < subObjectIds.length; i++) {
+            if (subObjectIds[i] === subId) {
+                subObjectValues[i] = subValue;
+            }
+        }
+        subObjectValuesChanged();
+    }
 
     function isInTolerance(measurement, reference) {
         //console.log("check is in tolerance", measurement, reference)
@@ -72,6 +109,15 @@ Item {
         applyStyling();
     }
 
+    onSubObjectGuiStatesChanged: {
+    }
+
+    onSubObjectSetStatesChanged: {
+    }
+
+    onSubObjectValuesChanged: {
+    }
+
     Kirigami.ApplicationWindow {
         id: popup
         title: pnidElement.displayName
@@ -99,6 +145,12 @@ Item {
 
     PnidUiLabel {
         text: pnidElement._formattedValue
+        position: pnidElement.valuePosition
+    }
+    PnidUiLabel {
+        text: pnidElement.label
+        position: pnidElement.labelPosition
+        size: "large"
     }
 
     Shape {
@@ -193,10 +245,6 @@ Item {
             PathLine {
                 x: 0; y: 100
             }
-        }
-        PnidSvgLabel {
-            text: pnidElement.label
-            pixelSize: 130
         }
     }
 }

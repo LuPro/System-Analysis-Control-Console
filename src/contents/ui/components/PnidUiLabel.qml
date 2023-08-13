@@ -8,8 +8,11 @@ Controls.Label {
     id: textLabel
 
     //TODO: Offset not implemented yet
-    property int xOffset
-    property int yOffset
+    property int xOffset: 0
+    property int yOffset: 0
+
+    property string size: "medium"
+    property string position: "bottom"
 
     transform: [
         Scale {
@@ -17,29 +20,37 @@ Controls.Label {
             yScale: 1/pnid.zoomScale
         },
         Translate  {
-            x: pnidElement.valuePosition !== "right"
-               ? pnidElement.valuePosition === "left"
-                 ? -(textLabel.width)/pnid.zoomScale
-                 : -(textLabel.width/2)/pnid.zoomScale
-               : 0
-            y: pnidElement.valuePosition !== "bottom"
-               ? pnidElement.valuePosition === "top"
-                 ? -(textLabel.height)/pnid.zoomScale
-                 : -(textLabel.height/2)/pnid.zoomScale
-               : 0
+            x: textLabel.position !== "right"
+               ? textLabel.position === "left"
+                 ? -(textLabel.width)/pnid.zoomScale + textLabel.width + xOffset
+                 : -(textLabel.width/2)/pnid.zoomScale + textLabel.width/2 + xOffset
+               : xOffset
+            y: textLabel.position !== "bottom"
+               ? textLabel.position === "top"
+                 ? -(textLabel.height)/pnid.zoomScale + textLabel.height + yOffset
+                 : -(textLabel.height/2)/pnid.zoomScale + textLabel.height/2 + yOffset
+               : yOffset
         }
     ]
 
     text: "Label text not connected to value!"
-    visible: pnidElement.valuePosition == "none" ? false : true
-    anchors.margins: (pnidElement.valuePosition == "bottom") || (pnidElement.valuePosition == "top")
+    font.pointSize: size === "medium"
+                    ? Kirigami.Theme.defaultFont.pointSize
+                    : size === "small"
+                      ? Kirigami.Theme.defaultFont.pointSize * 0.8
+                      : size === "large"
+                        ? Kirigami.Theme.defaultFont.pointSize * 1.3
+                        : undefined;
+    visible: textLabel.position == "none" ? false : true
+    anchors.margins: (textLabel.position == "bottom") || (textLabel.position == "top")
                      ? 5/pnid.zoomScale : 8/pnid.zoomScale
-    anchors.top: pnidElement.valuePosition == "bottom" ? pnidElement.bottom : undefined
-    anchors.bottom: pnidElement.valuePosition == "top" ? pnidElement.top : undefined
-    anchors.left: pnidElement.valuePosition == "right" ? pnidElement.right : undefined
-    anchors.right: pnidElement.valuePosition == "left" ? pnidElement.left : undefined
-    anchors.horizontalCenter: (pnidElement.valuePosition == "bottom") || (pnidElement.valuePosition == "top")
+    anchors.top: textLabel.position == "bottom" ? pnidElement.bottom : undefined
+    anchors.bottom: textLabel.position == "top" ? pnidElement.top : undefined
+    anchors.left: textLabel.position == "right" ? pnidElement.right : undefined
+    anchors.right: textLabel.position == "left" ? pnidElement.left : undefined
+    anchors.centerIn: textLabel.position == "center" ? pnidElement : undefined
+    anchors.horizontalCenter: (textLabel.position == "bottom") || (textLabel.position == "top")
                               ? pnidElement.horizontalCenter : undefined
-    anchors.verticalCenter: (pnidElement.valuePosition == "left") || (pnidElement.valuePosition == "right")
+    anchors.verticalCenter: (textLabel.position == "left") || (textLabel.position == "right")
                             ? pnidElement.verticalCenter : undefined
 }

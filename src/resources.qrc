@@ -8,6 +8,7 @@
         <file alias="BackendConnection.qml">contents/ui/components/BackendConnection.qml</file>
         <file alias="PnidUiLabel.qml">contents/ui/components/PnidUiLabel.qml</file>
         <file alias="PnidSvgLabel">contents/ui/components/PnidSvgLabel.qml</file>
+        <file alias="DebugRectangle.qml">contents/ui/components/DebugRectangle.qml</file>
     </qresource>
     <qresource prefix="/pnid_elements">
         <file alias="ValveSolenoid.qml">contents/ui/pnid_elements/ValveSolenoid.qml</file>
@@ -16,6 +17,7 @@
         <file alias="Led.qml">contents/ui/pnid_elements/Led.qml</file>
         <file alias="GasBottle.qml">contents/ui/pnid_elements/GasBottle.qml</file>
         <file alias="MagazineEjector.qml">contents/ui/pnid_elements/MagazineEjector.qml</file>
+        <file alias="LightBarrier.qml">contents/ui/pnid_elements/LightBarrier.qml</file>
     </qresource>
     <qresource prefix="/pnids">
         <file>contents/ui/pnids/pnidTest.qml</file>
@@ -26,5 +28,6 @@
         <file alias="SliderInput.qml">contents/ui/popup_components/SliderInput.qml</file>
         <file alias="Graph.qml">contents/ui/popup_components/Graph.qml</file>
         <file alias="NumberInput.qml">contents/ui/popup_components/NumberInput.qml</file>
+        <file alias="DropdownSelector.qml">contents/ui/popup_components/DropdownSelector.qml</file>
     </qresource>
 </RCC>

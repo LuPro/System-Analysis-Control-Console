@@ -112,6 +112,12 @@ Item {
 
     PnidUiLabel {
         text: pnidElement._formattedValue
+        position: pnidElement.valuePosition
+    }
+    PnidUiLabel {
+        text: pnidElement.label
+        position: pnidElement.labelPosition
+        size: "large"
     }
 
     Shape {
@@ -150,11 +156,9 @@ Item {
 
             startX: 0;  startY: 1000
             PathLine {
-                id: contentTopLeft
                 x: 0; y: 1000 * (1 - Math.min(Math.max(pnidElement.value/pnidElement.maxValue, 0), 1))
             }
             PathLine {
-                id: contentTopRight
                 x: 500; y: 1000 * (1 - Math.min(Math.max(pnidElement.value/pnidElement.maxValue, 0), 1))
             }
             PathLine {
@@ -197,10 +201,6 @@ Item {
             PathLine {
                 x: 0; y: 0
             }
-        }
-        PnidSvgLabel {
-            text: pnidElement.label
-            pixelSize: 130
         }
     }
 }

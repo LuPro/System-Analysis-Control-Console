@@ -82,6 +82,7 @@ Item {
         displayName: "Tank"
         x: 2000
         y: 0
+        rotation: 1
         label: "Fuel"
         valuePosition: "right"
         unit: "l"
@@ -100,12 +101,13 @@ Item {
 
     Led {
         id: testLed
-        objectName: "testLed"
+        objectName: "2:MyObject/2:MyVariable6"
         displayName: "Manual"
-        x: 3200
+        x: 3175
         y: 1300
-        rotation: 0
+        rotation: 2
         label: displayName
+        onColor: Kirigami.Theme.positiveTextColor
     }
 
     GasBottle {
@@ -124,6 +126,15 @@ Item {
         x: 2300
         y: 1000
         subObjectIds: ["2:MyObject/2:MyVariable5"]
+    }
+
+    LightBarrier {
+        id: testBarrier
+        objectName: "2:MyObject/2:MyVariable7"
+        displayName: "LightBarrier"
+        x: 600
+        y: 2000
+        valuePosition: "top"
     }
 
     Shape {

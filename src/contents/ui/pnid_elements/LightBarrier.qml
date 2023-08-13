@@ -8,39 +8,71 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: 400
-    height: 1000
+    width: 100
+    height: 800
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
     property double guiState
     property double setState
     property double value
-    property double maxValue: 100 //TODO: Some way of turning off fill level display would be good I think
-
     property int strokeWidth: 2
-    property string valuePosition: "right"
-    property string label: ""
-    property string labelPosition: "center"
+    property string valuePosition: "bottom"
     property int rotation: 0 //rotation id: 0, 1, 2, 3 -> 90° steps
 
     property string unit
     property string content
     property var connections //list of connection points that other elements can connect to
 
-    property bool checkSensTolerance: true
+    property bool checkSensTolerance: false
 
     property bool disablePopup: false
     //popup lists are for elements that aren't following the main value of the pnid element
     //eg: having a speed setting on a servo additionally to its position slider
-    property var popupPacketIds //list of strings
-    property var popupGuiStates //list of double
-    property var popupSetStates //list of double
-    property var popupValues //list of double
+    property var subObjectIds //list of strings
+    property var subObjectGuiStates //list of double
+    property var subObjectSetStates //list of double
+    property var subObjectValues //list of double
 
     property string _formattedValue //this is only for internal use
     property int _scaledStrokeWidth: strokeWidth / pnid.zoomScale
 
+    Component.onCompleted: {
+        subObjectGuiStates = Array(subObjectIds.length).fill(undefined);
+        subObjectSetStates = Array(subObjectIds.length).fill(undefined);
+        subObjectValues = Array(subObjectIds.length).fill(undefined);
+
+        for (let subObject of subObjectIds) {
+            pnidHandler.registerSubObject(pnidElement.objectName, subObject);
+        }
+    }
+
+    function setSubObjectGuiState(subId: string, subValue: double) {
+        for (let i = 0; i < subObjectIds.length; i++) {
+            if (subObjectIds[i] === subId) {
+                subObjectGuiStates[i] = subValue;
+            }
+        }
+        subObjectGuiStatesChanged();
+    }
+
+    function setSubObjectSetState(subId: string, subValue: double) {
+        for (let i = 0; i < subObjectIds.length; i++) {
+            if (subObjectIds[i] === subId) {
+                subObjectSetStates[i] = subValue;
+            }
+        }
+        subObjectSetStatesChanged();
+    }
+
+    function setSubObjectValue(subId: string, subValue: double) {
+        for (let i = 0; i < subObjectIds.length; i++) {
+            if (subObjectIds[i] === subId) {
+                subObjectValues[i] = subValue;
+            }
+        }
+        subObjectValuesChanged();
+    }
     function isInTolerance(measurement, reference) {
         //console.log("check is in tolerance", measurement, reference)
         if (!checkSensTolerance || measurement === reference) {
@@ -53,7 +85,13 @@ Item {
 
     function applyStyling() {
         //console.log("applying styling", value, setState);
-        _formattedValue = value + unit;
+        if (value >= 1) {
+            laser.strokeColor = Kirigami.Theme.positiveTextColor;
+            _formattedValue = "Detected";
+        } else {
+            laser.strokeColor = Kirigami.Theme.textColor;
+            _formattedValue = "Not Detected";
+        }
     }
 
     onDisplayNameChanged: {
@@ -70,6 +108,15 @@ Item {
 
     onValueChanged: {
         applyStyling();
+    }
+
+    onSubObjectGuiStatesChanged: {
+    }
+
+    onSubObjectSetStatesChanged: {
+    }
+
+    onSubObjectValuesChanged: {
     }
 
     Kirigami.ApplicationWindow {
@@ -101,12 +148,6 @@ Item {
         text: pnidElement._formattedValue
         position: pnidElement.valuePosition
     }
-    PnidUiLabel {
-        text: pnidElement.label
-        position: pnidElement.labelPosition
-        size: "large"
-        yOffset: pnidElement.labelPosition == "center" ? 70 : 0
-    }
 
     Shape {
         //TODO: according to docs it's better to have as few shapes as possible and rather have more shapepaths
@@ -136,42 +177,71 @@ Item {
         }
 
         ShapePath {
-            id: connector
+            id: topElement
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 250; startY: 139;
+            startX: 0;  startY: 0
             PathLine {
-                x: 250; y: 50;
-            }
-            PathSvg {
-                path: "M 250 50 A 50 50 0 0 0 150 50 250"
+                x: 100; y: 0
             }
             PathLine {
-                x: 150; y: 139;
+                x: 100; y: 100
+            }
+            PathLine {
+                x: 60; y: 140
+            }
+            PathLine {
+                x: 40; y: 140
+            }
+            PathLine {
+                x: 0; y: 100
+            }
+            PathLine {
+                x: 0; y: 0
             }
         }
         ShapePath {
-            id: body
+            id: bottomElement
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 400; startY: 1000
+            startX: 0;  startY: 800
             PathLine {
-                x: 400; y: 250
-            }
-            PathSvg {
-                path: "M 400 250 A 230 230 0 0 0 0 250"
+                x: 100; y: 800
             }
             PathLine {
-                x: 0; y: 1000
+                x: 100; y: 700
             }
             PathLine {
-                x: 400; y: 1000
+                x: 60; y: 660
+            }
+            PathLine {
+                x: 40; y: 660
+            }
+            PathLine {
+                x: 0; y: 700
+            }
+            PathLine {
+                x: 0; y: 800
+            }
+        }
+        ShapePath {
+            id: laser
+            strokeWidth: pnidElement._scaledStrokeWidth
+            strokeColor: Kirigami.Theme.textColor
+            strokeStyle: ShapePath.DashLine
+            dashPattern: [3, 3]
+            dashOffset: 0.2
+            fillColor: "transparent"
+
+            startX: 50; startY: 140
+            PathLine {
+                x: 50; y: 660
             }
         }
     }

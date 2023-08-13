@@ -10,6 +10,7 @@ Item {
     implicitWidth: mainLayout.implicitWidth
     implicitHeight: mainLayout.implicitHeight
 
+    property string objectId: pnidElement.objectName
     property string label: ""
     property bool guiState
     property bool setState
@@ -27,6 +28,7 @@ Item {
         checkDeviation();
     }
     function checkDeviation() {
+        console.log("checking deviation", value, guiState); //TODO: Something is broken here
         if (value == guiState)
         {
             customTextInput.color = Kirigami.Theme.textColor;
@@ -54,7 +56,7 @@ Item {
             to: numberInput.max
 
             onValueModified: {
-                numberInput.userInput(pnidElement.objectName, spinbox.value);
+                numberInput.userInput(numberInput.objectId, spinbox.value);
                 numberInput.guiState = spinbox.value;
             }
             contentItem: RowLayout {

@@ -10,6 +10,7 @@ Item {
     implicitWidth: mainLayout.implicitWidth
     implicitHeight: mainLayout.implicitHeight
 
+    property string objectId: pnidElement.objectName
     property string label: ""
     property bool guiState
     property bool setState
@@ -47,7 +48,7 @@ Item {
             id: checkbox
             text: digitalInput.label
             onClicked: {
-                digitalInput.userInput(pnidElement.objectName, checkbox.checkState ? 1 : 0);
+                digitalInput.userInput(digitalInput.objectId, checkbox.checkState ? 1 : 0);
                 digitalInput.guiState = checkbox.checkState;
             }
 
