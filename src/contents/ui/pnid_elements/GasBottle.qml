@@ -8,7 +8,7 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: 500
+    width: 400
     height: 1000
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
@@ -129,74 +129,49 @@ Item {
         }
 
         ShapePath {
-            id: topArc
+            id: connector
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
+            startX: 250; startY: 139;
+            PathLine {
+                x: 250; y: 50;
+            }
             PathSvg {
-                path: "M 500 100 A 365 365 0 0 0 0 100"
+                path: "M 250 50 A 50 50 0 0 0 150 50 250"
+            }
+            PathLine {
+                x: 150; y: 139;
             }
         }
         ShapePath {
-            id: bottomArc
+            id: body
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
+            startX: 400; startY: 1000
+            PathLine {
+                x: 400; y: 250
+            }
             PathSvg {
-                path: "M 0 900 A 365 365 0 0 0 500 900"
+                path: "M 400 250 A 230 230 0 0 0 0 250"
+            }
+            PathLine {
+                x: 0; y: 1000
+            }
+            PathLine {
+                x: 400; y: 1000
             }
         }
-        ShapePath {
-            id: content
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: "transparent"
-            strokeStyle: ShapePath.SolidLine
-            fillColor: Kirigami.Theme.highlightColor
 
-            startX: 0;  startY: 900
-            PathLine {
-                id: contentTopLeft
-                x: 0; y: 100 + 800 * (1 - Math.min(Math.max(pnidElement.value/pnidElement.maxValue, 0), 1))
-            }
-            PathLine {
-                id: contentTopRight
-                x: 500; y: 100 + 800 * (1 - Math.min(Math.max(pnidElement.value/pnidElement.maxValue, 0), 1))
-            }
-            PathLine {
-                x: 500; y: 900
-            }
-            PathLine {
-                x: 0; y: 900
-            }
-        }
-        ShapePath {
-            id: outline
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: Kirigami.Theme.textColor
-            strokeStyle: ShapePath.SolidLine
-            fillColor: "transparent"
-
-            startX: 0;  startY: 100
-            PathLine {
-                x: 500; y: 100
-            }
-            PathLine {
-                x: 500; y: 900
-            }
-            PathLine {
-                x: 0; y: 900
-            }
-            PathLine {
-                x: 0; y: 100
-            }
-        }
         PnidSvgLabel {
             text: pnidElement.label
             pixelSize: 130
+            yOffset: pnidElement.labelPosition == "center" ? 70 : 0
         }
     }
 }

@@ -26,6 +26,7 @@ Item {
 
     property bool checkSensTolerance: true
 
+    property bool disablePopup: false
     //popup lists are for elements that aren't following the main value of the pnid element
     //eg: having a speed setting on a servo additionally to its position slider
     property var popupPacketIds //list of strings
@@ -172,7 +173,7 @@ Item {
                 }
                 else
                 {
-                    popup.visible = true;
+                    popup.visible = true && (!pnidElement.disablePopup);;
                 }
 
             }

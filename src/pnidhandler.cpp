@@ -73,25 +73,58 @@ void PnidHandler::processPackets(const QVector<DataPacket> &packets)
         int activePnid = pnidContainer->property("currentIndex").toInt();
         //right now I'm only updating the currently visible pnid, this should be a setting somewhere I think
         QObject *pnidElement = pnids.at(activePnid)->pnid->findChild<QObject*>(packet.m_id);
+        bool isSubObject = false;
         if (!pnidElement)
         {
-            //todo: this is a somewhat expected occurence, we don't need a message for this forever
-            std::cout << "Couldn't find PnID element with id: " << packet.m_id.toStdString() << std::endl << std::flush;
-            continue;
+            pnidElement = findSubObjectParent(activePnid, packet.m_id);
+            isSubObject = true;
+            if (!pnidElement)
+            {
+                //todo: this is a somewhat expected occurence, we don't need a message for this forever
+                std::cout << "Couldn't find PnID element with id: " << packet.m_id.toStdString() << std::endl << std::flush;
+                continue;
+            }
         }
         switch(packet.m_packetType)
         {
             case PacketType::feedback:
-            std::cout << "sending a feedback value" << std::endl;
-                pnidElement->setProperty("value", packet.m_value);
+                std::cout << "sending a feedback value" << std::endl;
+                if (!isSubObject)
+                {
+                    pnidElement->setProperty("value", packet.m_value);
+                }
+                else
+                {
+                    QMetaObject::invokeMethod(pnidElement, "setSubObjectValue",
+                                              Q_ARG(QString, packet.m_id),
+                                              Q_ARG(double, packet.m_value));
+                }
                 break;
             case PacketType::guiState:
                 std::cout << "sending a gui state" << std::endl;
-                pnidElement->setProperty("guiState", packet.m_value);
+                if (!isSubObject)
+                {
+                    pnidElement->setProperty("guiState", packet.m_value);
+                }
+                else
+                {
+                    QMetaObject::invokeMethod(pnidElement, "setSubObjectGuiState",
+                                              Q_ARG(QString, packet.m_id),
+                                              Q_ARG(double, packet.m_value));
+                }
                 break;
             case PacketType::hardwareState:
                 std::cout << "sending a hardware state" << std::endl;
-                pnidElement->setProperty("setState", packet.m_value);
+                if (!isSubObject)
+                {
+                    pnidElement->setProperty("setState", packet.m_value);
+                }
+                else
+                {
+                    QMetaObject::invokeMethod(pnidElement, "setSubObjectSetState",
+                                              Q_ARG(QString, packet.m_id),
+                                              Q_ARG(double, packet.m_value));
+                }
                 break;
             default:
                 std::cerr << "Encountered unknown packet type: " << packet.m_packetType << std::endl;
@@ -104,4 +137,24 @@ void PnidHandler::handleUserInput(const QString &id, const double &value)
 {
     std::cout << "Got user input" << std::endl;
     emit userInput(DataPacket(id, value, PacketType::guiState));
+}
+
+void PnidHandler::registerSubObject(const QString &parentId, const QString &subId)
+{
+    if (subObjects.contains(subId))
+    {
+        QList<QString> parentIds = subObjects.values();
+        if (!parentIds.contains(parentId)) {
+            subObjects.insert(subId, parentId);
+        }
+    }
+    else
+    {
+        subObjects.insert(subId, parentId);
+    }
+}
+
+QObject *PnidHandler::findSubObjectParent(const int &activePnid, const QString &id) {
+    QString parentId = subObjects.values(id).at(0);
+    return pnids.at(activePnid)->pnid->findChild<QObject*>(parentId);
 }

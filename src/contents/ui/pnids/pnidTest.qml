@@ -50,7 +50,6 @@ Item {
 
     ValveSolenoid {
         id: testGreenLight
-        //objectName: "4:01_Distribution/4:Indicators/4:Lights/4:Yellow"
         objectName: "4:01_Distribution/4:Indicators/4:StationState/4:Manual"
         displayName: "Yellow Light"
         checkSensTolerance: false
@@ -69,7 +68,7 @@ Item {
 
     ValveSolenoid {
         id: testMockServer
-        objectName: "2:MyObject/2:MyVariable"
+        objectName: "2:MyObject/2:MyVariable1"
         displayName: "Mock Server MyVar"
         checkSensTolerance: false
         x: 1500
@@ -79,7 +78,7 @@ Item {
 
     Tank {
         id: testTank
-        objectName: "TANK___2:MyObject/2:MyVariable2"
+        objectName: "2:MyObject/2:MyVariable2"
         displayName: "Tank"
         x: 2000
         y: 0
@@ -90,13 +89,41 @@ Item {
 
     Container {
         id: testContainer
-        objectName: "2:MyObject/2:MyVariable2"
+        objectName: "2:MyObject/2:MyVariable3"
         displayName: "Container"
         x: 3000
         y: 0
         label: "Discs"
         labelPosition: "top"
         unit: "#"
+    }
+
+    Led {
+        id: testLed
+        objectName: "testLed"
+        displayName: "Manual"
+        x: 3200
+        y: 1300
+        rotation: 0
+        label: displayName
+    }
+
+    GasBottle {
+        id: testBottle
+        objectName: "testBottle"
+        displayName: "Compressed Air Tank"
+        x: 0
+        y: 2000
+        label: "Air"
+    }
+
+    MagazineEjector {
+        id: testMagazine
+        objectName: "2:MyObject/2:MyVariable4"
+        displayName: "Ejector"
+        x: 2300
+        y: 1000
+        subObjectIds: ["2:MyObject/2:MyVariable5"]
     }
 
     Shape {

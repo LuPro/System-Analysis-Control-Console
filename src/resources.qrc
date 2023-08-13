@@ -13,6 +13,9 @@
         <file alias="ValveSolenoid.qml">contents/ui/pnid_elements/ValveSolenoid.qml</file>
         <file alias="Tank.qml">contents/ui/pnid_elements/Tank.qml</file>
         <file alias="Container.qml">contents/ui/pnid_elements/Container.qml</file>
+        <file alias="Led.qml">contents/ui/pnid_elements/Led.qml</file>
+        <file alias="GasBottle.qml">contents/ui/pnid_elements/GasBottle.qml</file>
+        <file alias="MagazineEjector.qml">contents/ui/pnid_elements/MagazineEjector.qml</file>
     </qresource>
     <qresource prefix="/pnids">
         <file>contents/ui/pnids/pnidTest.qml</file>

@@ -8,20 +8,22 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: 500
-    height: 1000
+    width: 100
+    height: 50
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
     property double guiState
     property double setState
     property double value
-    property double maxValue: 100 //TODO: Some way of turning off fill level display would be good I think
+
+    property var onColor: undefined
+    property var offColor: undefined
 
     property int strokeWidth: 2
-    property string valuePosition: "right"
+    property string valuePosition: "none"
     property string label: ""
-    property string labelPosition: "center"
+    property string labelPosition: "bottom"
     property int rotation: 0 //rotation id: 0, 1, 2, 3 -> 90° steps
 
     property string unit
@@ -52,8 +54,12 @@ Item {
     }
 
     function applyStyling() {
-        //console.log("applying styling", value, setState);
         _formattedValue = value + unit;
+        if (value) {
+            body.fillColor = onColor === undefined ? Kirigami.Theme.highlightColor : onColor;
+        } else {
+            body.fillColor = offColor === undefined ? Kirigami.Theme.highlightColor : offColor;
+        }
     }
 
     onDisplayNameChanged: {
@@ -129,71 +135,21 @@ Item {
         }
 
         ShapePath {
-            id: topArc
+            id: body
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
-            fillColor: "transparent"
+            fillColor: pnidElement.offColor == undefined ? "transparent" : pnidElement.offColor
 
+            startX: 0;  startY: 50
+            PathLine {
+                x: 100; y: 50
+            }
             PathSvg {
-                path: "M 500 100 A 365 365 0 0 0 0 100"
+                path: "M 100 50 A 50 50 0 0 0 0 50"
             }
         }
-        ShapePath {
-            id: bottomArc
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: Kirigami.Theme.textColor
-            strokeStyle: ShapePath.SolidLine
-            fillColor: "transparent"
 
-            PathSvg {
-                path: "M 0 900 A 365 365 0 0 0 500 900"
-            }
-        }
-        ShapePath {
-            id: content
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: "transparent"
-            strokeStyle: ShapePath.SolidLine
-            fillColor: Kirigami.Theme.highlightColor
-
-            startX: 0;  startY: 900
-            PathLine {
-                id: contentTopLeft
-                x: 0; y: 100 + 800 * (1 - Math.min(Math.max(pnidElement.value/pnidElement.maxValue, 0), 1))
-            }
-            PathLine {
-                id: contentTopRight
-                x: 500; y: 100 + 800 * (1 - Math.min(Math.max(pnidElement.value/pnidElement.maxValue, 0), 1))
-            }
-            PathLine {
-                x: 500; y: 900
-            }
-            PathLine {
-                x: 0; y: 900
-            }
-        }
-        ShapePath {
-            id: outline
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: Kirigami.Theme.textColor
-            strokeStyle: ShapePath.SolidLine
-            fillColor: "transparent"
-
-            startX: 0;  startY: 100
-            PathLine {
-                x: 500; y: 100
-            }
-            PathLine {
-                x: 500; y: 900
-            }
-            PathLine {
-                x: 0; y: 900
-            }
-            PathLine {
-                x: 0; y: 100
-            }
-        }
         PnidSvgLabel {
             text: pnidElement.label
             pixelSize: 130

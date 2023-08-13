@@ -28,13 +28,13 @@ ShapePath {
            pnidElement.labelPosition === "top" ||
            pnidElement.labelPosition === "bottom")
            ? pnidElement.width/2 - width / 2 - 10 + label.xOffset
-           : pnidElement.labelPosition === "left" ? -60 - width + label.xOffset : 560 + label.xOffset
+           : pnidElement.labelPosition === "left" ? -60 - width + label.xOffset : pnidElement.width + 60 + label.xOffset
         //TODO: this defaults to bottom on unknown, similar issue as with x coord
         y: label.y !== undefined ? label.y : (pnidElement.labelPosition === "center" ||
             pnidElement.labelPosition === "left" ||
             pnidElement.labelPosition === "right")
             ? pnidElement.height/2 - height / 2 + label.yOffset
-            : pnidElement.labelPosition === "top" ? -60 - height + label.yOffset : 1060 + label.yOffset
+            : pnidElement.labelPosition === "top" ? -60 - height + label.yOffset : pnidElement.height + 60 + label.yOffset
         font.family: "Montserrat"
         font.pixelSize: label.pixelSize
         font.weight: Font.Thin
