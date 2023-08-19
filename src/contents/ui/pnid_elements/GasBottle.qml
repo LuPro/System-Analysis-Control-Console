@@ -8,8 +8,8 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: 400
-    height: 1000
+    width: rotation % 2 ? 1000 : 400
+    height: rotation % 2 ? 400 : 1000
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
@@ -33,13 +33,28 @@ Item {
     property bool disablePopup: false
     //popup lists are for elements that aren't following the main value of the pnid element
     //eg: having a speed setting on a servo additionally to its position slider
-    property var popupPacketIds //list of strings
-    property var popupGuiStates //list of double
-    property var popupSetStates //list of double
-    property var popupValues //list of double
+
+    //list of available sub objects (human readable). only needed for eventual UI builder
+    property var subObjectSlots: []
+    property var subObjectIds: undefined //list of strings
+    property var subObjectGuiStates //list of double
+    property var subObjectSetStates //list of double
+    property var subObjectValues //list of double
 
     property string _formattedValue //this is only for internal use
     property int _scaledStrokeWidth: strokeWidth / pnid.zoomScale
+
+    Component.onCompleted: {
+        if (subObjectIds !== undefined) {
+            subObjectGuiStates = Array(subObjectIds.length).fill(undefined);
+            subObjectSetStates = Array(subObjectIds.length).fill(undefined);
+            subObjectValues = Array(subObjectIds.length).fill(undefined);
+
+            for (let subObject of subObjectIds) {
+                pnidHandler.registerSubObject(pnidElement.objectName, subObject);
+            }
+        }
+    }
 
     function isInTolerance(measurement, reference) {
         //console.log("check is in tolerance", measurement, reference)
@@ -97,17 +112,6 @@ Item {
         }
     }
 
-    PnidUiLabel {
-        text: pnidElement._formattedValue
-        position: pnidElement.valuePosition
-    }
-    PnidUiLabel {
-        text: pnidElement.label
-        position: pnidElement.labelPosition
-        size: "large"
-        yOffset: pnidElement.labelPosition == "center" ? 70 : 0
-    }
-
     Shape {
         //TODO: according to docs it's better to have as few shapes as possible and rather have more shapepaths
         //can I make pnid elements to be just shape paths and have one shape per pnid?
@@ -115,11 +119,17 @@ Item {
         width: parent.width
         height: parent.height
         asynchronous: true
-        transform: Rotation {
-            origin.x: pnidElement.width/2
-            origin.y: pnidElement.height/2
-            angle: 90 * rotation
-        }
+        transform: [
+            Rotation {
+                origin.x: 0
+                origin.y: 0
+                angle: 90 * (rotation % 4)
+            },
+            Translate {
+                x: (rotation % 4) == 1 || (rotation % 4) == 2 ? pnidElement.width : 0
+                y: (rotation % 4) == 2 || (rotation % 4) == 3 ? pnidElement.height : 0
+            }
+        ]
 
         TapHandler {
             onTapped: {
@@ -174,5 +184,16 @@ Item {
                 x: 400; y: 1000
             }
         }
+    }
+
+    PnidUiLabel {
+        text: pnidElement._formattedValue
+        position: pnidElement.valuePosition
+    }
+    PnidUiLabel {
+        text: pnidElement.label
+        position: pnidElement.labelPosition
+        size: "large"
+        yOffset: pnidElement.labelPosition == "center" ? 70 : 0
     }
 }

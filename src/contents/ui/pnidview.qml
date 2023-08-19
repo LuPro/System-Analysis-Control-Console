@@ -35,6 +35,51 @@ Kirigami.Page {
                 displayComponent: Kirigami.Icon {
                     source: tcpHandler.isPrimary ? "documentinfo" : "data-warning"
                 }
+            },
+
+            Kirigami.Action {
+                id: zoomOutAction
+                visible: true
+                icon.name: "file-zoom-out"
+                shortcut: StandardKey.ZoomOut
+                onTriggered: {
+                    zoomStep("out");
+                }
+            },
+            Kirigami.Action {
+                id: zoomSelectAction
+                visible: true
+                displayComponent: Controls.ComboBox {
+                    id: zoomSelector
+                    Component.onCompleted: {
+                        _zoomSelector = this;
+                        zoomSelector.currentIndex = 5;
+                        pnidHandler.setCurrentZoom(zoomSelector.currentIndex);
+                        currentIndex = Qt.binding(function() { return pnidHandler.currentZoom });
+                    }
+                    onActivated: {
+                        //pnidHandler.pnidSetZoom(zoomSelector.currentIndex);
+                        console.log("model", model[zoomSelector.currentIndex]);
+                        zoomSet(zoomSelector.currentIndex);
+                    }
+                    /*onCurrentIndexChanged: {
+                        zoomScale(model[zoomSelector.currentIndex].replace("%", "")/100);
+                    }*/
+
+                    textRole: "text"
+                    valueRole: "value"
+
+                    model: _zoomSelectorModel
+                }
+            },
+            Kirigami.Action {
+                id: zoomInAction
+                visible: true
+                icon.name: "file-zoom-in"
+                shortcut: StandardKey.ZoomIn
+                onTriggered: {
+                    zoomStep("in");
+                }
             }/*,
 
             Kirigami.Action {
@@ -47,6 +92,43 @@ Kirigami.Page {
             }*/
 
         ]
+    }
+
+    property double _defaultScaleFactor: 0.125
+    property var _zoomSelector: undefined
+    property var _zoomSelectorModel: [
+        {text: "25%", value: 0.25},
+        {text: "33%", value: 0.33},
+        {text: "50%", value: 0.50},
+        {text: "66%", value: 0.66},
+        {text: "75%", value: 0.75},
+        {text: "100%", value: 1.0},
+        {text: "125%", value: 1.25},
+        {text: "150%", value: 1.50},
+        {text: "200%", value: 2.0},
+        {text: "400%", value: 4.0},
+        {text: "800%", value: 8.0},
+    ]
+
+    function zoomScale(scale) {
+        console.log("zoom scale", scale);
+        console.log("pnid", pnidTabsContainer.itemAt(pnidTabs.currentIndex).item.zoomScale);
+        pnidTabsContainer.itemAt(pnidTabs.currentIndex).item.zoomScale = scale * _defaultScaleFactor;
+    }
+
+    function zoomSet(newZoom) {
+        pnidHandler.setCurrentZoom(newZoom);
+    }
+
+    function zoomStep(type) {
+        if (type === "in") {
+            //_zoomSelector.currentIndex = Math.min(_zoomSelector.currentIndex + 1, _zoomSelector.model.length - 1);
+            console.log("current", pnidHandler.currentZoom, pnidHandler.currentZoom + 1);
+            pnidHandler.setCurrentZoom(Math.min(pnidHandler.currentZoom + 1, _zoomSelector.model.length - 1));
+        } else if (type === "out") {
+            //_zoomSelector.currentIndex = Math.max(_zoomSelector.currentIndex - 1, 0);
+            pnidHandler.setCurrentZoom(Math.max(pnidHandler.currentZoom - 1, 0));
+        }
     }
 
     Connections {
@@ -89,6 +171,12 @@ Kirigami.Page {
 
     Connections {
         target: pnidHandler
+
+        function onCurrentZoomChanged() {
+            //console.log("currentindex", pnidTabs.currentIndex);
+            let activePnid = pnidTabsContainer.itemAt(pnidTabs.currentIndex).item;
+            activePnid.zoomScale = _zoomSelectorModel[pnidHandler.getCurrentZoom()].value * _defaultScaleFactor;
+        }
     }
 
     ColumnLayout {
@@ -144,6 +232,11 @@ Kirigami.Page {
                 model: pnidHandler.pnids
                 Controls.TabButton {
                     text: modelData.name
+                    onClicked: {
+                        pnidHandler.setActivePnid(pnidTabs.currentIndex);
+                        //_zoomSelector.currentIndex = pnidHandler.getZoom(pnidTabs.currentIndex);
+                        console.log("clicked tab bar", pnidTabs.currentIndex);
+                    }
                 }
             }
         }
@@ -177,8 +270,6 @@ Kirigami.Page {
                     id: pnidLoader
                     objectName: modelData.name
                     source: modelData.filePath
-                    transform: Scale {origin.x: 0; origin.y: 0; xScale: 0.125; yScale: 0.125}
-                    //transform: Scale {origin.x: 0; origin.y: 0; xScale: 0.5; yScale: 0.5}
                 }
             }
         }

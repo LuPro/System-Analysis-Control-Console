@@ -8,8 +8,8 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: 100
-    height: 800
+    width: rotation % 2 ? 800 : 100
+    height: rotation % 2 ? 100 : 800
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
@@ -29,7 +29,10 @@ Item {
     property bool disablePopup: false
     //popup lists are for elements that aren't following the main value of the pnid element
     //eg: having a speed setting on a servo additionally to its position slider
-    property var subObjectIds //list of strings
+
+    //list of available sub objects (human readable). only needed for eventual UI builder
+    property var subObjectSlots: []
+    property var subObjectIds: undefined //list of strings
     property var subObjectGuiStates //list of double
     property var subObjectSetStates //list of double
     property var subObjectValues //list of double
@@ -38,12 +41,14 @@ Item {
     property int _scaledStrokeWidth: strokeWidth / pnid.zoomScale
 
     Component.onCompleted: {
-        subObjectGuiStates = Array(subObjectIds.length).fill(undefined);
-        subObjectSetStates = Array(subObjectIds.length).fill(undefined);
-        subObjectValues = Array(subObjectIds.length).fill(undefined);
+        if (subObjectIds !== undefined) {
+            subObjectGuiStates = Array(subObjectIds.length).fill(undefined);
+            subObjectSetStates = Array(subObjectIds.length).fill(undefined);
+            subObjectValues = Array(subObjectIds.length).fill(undefined);
 
-        for (let subObject of subObjectIds) {
-            pnidHandler.registerSubObject(pnidElement.objectName, subObject);
+            for (let subObject of subObjectIds) {
+                pnidHandler.registerSubObject(pnidElement.objectName, subObject);
+            }
         }
     }
 
@@ -144,11 +149,6 @@ Item {
         }
     }
 
-    PnidUiLabel {
-        text: pnidElement._formattedValue
-        position: pnidElement.valuePosition
-    }
-
     Shape {
         //TODO: according to docs it's better to have as few shapes as possible and rather have more shapepaths
         //can I make pnid elements to be just shape paths and have one shape per pnid?
@@ -156,11 +156,17 @@ Item {
         width: parent.width
         height: parent.height
         asynchronous: true
-        transform: Rotation {
-            origin.x: pnidElement.width/2
-            origin.y: pnidElement.height/2
-            angle: 90 * rotation
-        }
+        transform: [
+            Rotation {
+                origin.x: 0
+                origin.y: 0
+                angle: 90 * (rotation % 4)
+            },
+            Translate {
+                x: (rotation % 4) == 1 || (rotation % 4) == 2 ? pnidElement.width : 0
+                y: (rotation % 4) == 2 || (rotation % 4) == 3 ? pnidElement.height : 0
+            }
+        ]
 
         TapHandler {
             onTapped: {
@@ -244,5 +250,10 @@ Item {
                 x: 50; y: 660
             }
         }
+    }
+
+    PnidUiLabel {
+        text: pnidElement._formattedValue
+        position: pnidElement.valuePosition
     }
 }

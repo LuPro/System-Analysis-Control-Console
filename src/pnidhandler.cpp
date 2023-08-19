@@ -3,7 +3,10 @@
 Pnid::Pnid(const QString &name, const QUrl &filePath)
     : name(name), filePath(filePath)
 {
-
+    //TODO: This shouldn't be hardcoded, but set by the default in UI
+    //maybe default to some value like -1 that tells the UI to set the actual default
+    //in case many pnids get loaded at once
+    zoomScale = 5;
 }
 
 PnidHandler::PnidHandler(QQmlApplicationEngine *engine, QString appPath)
@@ -44,6 +47,9 @@ void PnidHandler::loadPnids(QVariant pnidContainerVariant)
     QFileInfo pnidTest(pnidBasePath + "pnidTest.qml");
     Pnid *pnid = new Pnid(pnidTest.completeBaseName(), QUrl::fromLocalFile(pnidTest.filePath()));
     pnids.append(pnid);
+    QFileInfo pnidTest2(pnidBasePath + "other_pnid.qml");
+    Pnid *pnid2 = new Pnid(pnidTest2.completeBaseName(), QUrl::fromLocalFile(pnidTest2.filePath()));
+    pnids.append(pnid2);
     //TODO: file discovery and loading the number of found files. just append more to pnids vector to load more tabs
 
     emit pnidsUpdated();
@@ -63,6 +69,13 @@ void PnidHandler::registerPnid(QVariant pnidVariant)
             pnids[i]->pnid = pnidObject;
         }
     }
+}
+
+void PnidHandler::setActivePnid(const int &newActivePnid)
+{
+    activePnid = newActivePnid;
+    currentZoom = pnids.at(newActivePnid)->zoomScale;
+    emit currentZoomChanged();
 }
 
 void PnidHandler::processPackets(const QVector<DataPacket> &packets)
@@ -154,9 +167,51 @@ void PnidHandler::registerSubObject(const QString &parentId, const QString &subI
     }
 }
 
-QObject *PnidHandler::findSubObjectParent(const int &activePnid, const QString &id) {
+int PnidHandler::getCurrentZoom()
+{
+    return pnids.at(activePnid)->zoomScale;
+}
+
+void PnidHandler::setCurrentZoom(const int &zoom)
+{
+    pnids.at(activePnid)->zoomScale = zoom;
+    emit currentZoomChanged();
+}
+
+/*void PnidHandler::pnidZoomStep(const int &direction)
+{
+    std::cout << "zoom: " << direction << std::endl;
+    //TODO: The length of the combo box list should not be hardcoded here
+    int newZoom = 0;
+    if (direction)
+    {
+        newZoom = pnids.at(activePnid)->zoomScale + 1;
+    }
+    else
+    {
+        newZoom = pnids.at(activePnid)->zoomScale - 1;
+    }
+    newZoom = qBound(0, newZoom, 11);
+    pnids.at(activePnid)->zoomScale = newZoom;
+    currentZoom = newZoom;
+    std::cout << "current zoom: " << currentZoom << std::endl;
+    emit currentZoomChanged(currentZoom);
+}*/
+
+/*void PnidHandler::pnidSetZoom(const int &zoomStep)
+{
+    int boundZoomStep = qBound(0, zoomStep, 11);
+    pnids.at(activePnid)->zoomScale = boundZoomStep;
+    currentZoom = boundZoomStep;
+    std::cout << "current zoom: " << currentZoom << std::endl;
+    emit currentZoomChanged(currentZoom);
+}*/
+
+QObject *PnidHandler::findSubObjectParent(const int &activePnid, const QString &id)
+{
     QList parentIds = subObjects.values(id);
-    if (parentIds.length() == 0) {
+    if (parentIds.length() == 0)
+    {
         return nullptr;
     }
     QString parentId = subObjects.values(id).at(0);

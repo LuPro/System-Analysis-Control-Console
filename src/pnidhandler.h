@@ -14,10 +14,14 @@
 
 #include "common.h"
 
+//TODO: This should be synced with the UI dropdown for zoom
+#define ZOOM_SCALES ["25%", "33%", "50%", "66%", "75%", "100%", "125%", "150%", "200%", "400%"]
+
 class Pnid : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString name MEMBER name NOTIFY nameChanged)
     Q_PROPERTY(QUrl filePath MEMBER filePath NOTIFY filePathChanged)
+    Q_PROPERTY(int zoomScale MEMBER zoomScale NOTIFY zoomScaleChanged)
 
 public:
     Pnid(const QString &name, const QUrl &filePath);
@@ -25,18 +29,22 @@ public:
     QString name;
     QUrl filePath;
     QObject *pnid;
+    int zoomScale;
 
 signals:
     //these signals are not intended to ever be used as these properties are meant to
     //be static, but otherwise I'm getting warnings
     void nameChanged();
     void filePathChanged();
+    void zoomScaleChanged();
 };
 
 class PnidHandler : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVector<Pnid*> pnids MEMBER pnids NOTIFY pnidsUpdated)
+    //Q_PROPERTY(int currentZoom MEMBER currentZoom NOTIFY currentZoomChanged)
+    Q_PROPERTY(int currentZoom READ getCurrentZoom WRITE setCurrentZoom NOTIFY currentZoomChanged)
 
 public:
     PnidHandler(QQmlApplicationEngine *engine, QString appPath);
@@ -47,6 +55,8 @@ public slots:
 
     void registerPnid(QVariant pnidVariant);
 
+    void setActivePnid(const int &newActivePnid);
+
     void processPackets(const QVector<DataPacket> &packets);
 
     void handleUserInput(const QString &id, const double &value);
@@ -54,9 +64,19 @@ public slots:
     //TODO: have this take a list of sub IDs and not just one (maybe as an override? how does that work with QML?)
     void registerSubObject(const QString &parentId, const QString &subId);
 
+    int getCurrentZoom();
+
+    void setCurrentZoom(const int &zoom);
+
+    //void pnidZoomStep(const int &direction);
+
+    //void pnidSetZoom(const int &scale);
+
 signals:
 
     void pnidsUpdated();
+
+    void currentZoomChanged();
 
     void userInput(const DataPacket &packet);
 
@@ -73,6 +93,8 @@ private:
     QString appPath;
 
     QObject *pnidRoot;
+    int activePnid;
+    int currentZoom;
     QVector<Pnid*> pnids;
 
     QMultiMap<QString, QString> subObjects;

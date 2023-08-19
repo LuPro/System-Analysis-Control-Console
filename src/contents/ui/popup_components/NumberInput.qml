@@ -12,15 +12,16 @@ Item {
 
     property string objectId: pnidElement.objectName
     property string label: ""
-    property bool guiState
-    property bool setState
-    property bool value
+    property double guiState
+    property double setState
+    property double value
 
     property string unit: ""
     property int min: 0
     property int max: 100
 
     onGuiStateChanged: {
+        console.log("gui state changed");
         spinbox.value = guiState;
         checkDeviation();
     }
@@ -28,7 +29,6 @@ Item {
         checkDeviation();
     }
     function checkDeviation() {
-        console.log("checking deviation", value, guiState); //TODO: Something is broken here
         if (value == guiState)
         {
             customTextInput.color = Kirigami.Theme.textColor;
@@ -58,6 +58,7 @@ Item {
             onValueModified: {
                 numberInput.userInput(numberInput.objectId, spinbox.value);
                 numberInput.guiState = spinbox.value;
+                console.log("value modified", spinbox.value, numberInput.guiState);
             }
             contentItem: RowLayout {
                 TextInput {

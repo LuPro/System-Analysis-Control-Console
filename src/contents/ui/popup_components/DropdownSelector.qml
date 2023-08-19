@@ -12,9 +12,9 @@ Item {
 
     property string objectId: pnidElement.objectName
     property string label: ""
-    property bool guiState
-    property bool setState
-    property bool value
+    property double guiState
+    property double setState
+    property double value
 
     property string unit: ""
     property var options
@@ -30,18 +30,18 @@ Item {
     function checkDeviation() {
         if (value == guiState)
         {
-            customTextInput.color = Kirigami.Theme.textColor;
+            dropdownInput.text.color = Kirigami.Theme.textColor;
         }
         else
         {
-            customTextInput.color = Kirigami.Theme.negativeTextColor;
+            dropdownInput.text.color = Kirigami.Theme.negativeTextColor;
         }
     }
 
     signal userInput(string id, real value)
 
     Component.onCompleted: {
-        options.push("Unknown");
+        options.push("Unknown"); //TODO: this seems to not do anything, maybe combobox doesn't take in updates to model?
         dropdownInput.userInput.connect(pnidHandler.handleUserInput);
     }
 
