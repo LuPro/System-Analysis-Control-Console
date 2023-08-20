@@ -9,13 +9,11 @@
 #include <QUrl>
 #include <QMultiMap>
 #include <QFileInfo>
+#include <QDir>
 #include <QQuickItem>
 #include <iostream>
 
 #include "common.h"
-
-//TODO: This should be synced with the UI dropdown for zoom
-#define ZOOM_SCALES ["25%", "33%", "50%", "66%", "75%", "100%", "125%", "150%", "200%", "400%"]
 
 class Pnid : public QObject {
     Q_OBJECT
@@ -81,6 +79,7 @@ signals:
     void userInput(const DataPacket &packet);
 
 private:
+    QFileInfoList findPnidFiles(const QString &basePath);
     //TODO: this only returns one object, at some point I'd want to handle several to allow duplicate IDs?
     //Maybe I don't and require the IDs to actually be unique -> then I'd need a way to forward from one to another
     //I think.
@@ -93,7 +92,7 @@ private:
     QString appPath;
 
     QObject *pnidRoot;
-    int activePnid;
+    int activePnid = 0;
     int currentZoom;
     QVector<Pnid*> pnids;
 

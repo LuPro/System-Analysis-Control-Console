@@ -44,13 +44,13 @@ void PnidHandler::loadPnids(QVariant pnidContainerVariant)
 {
     pnidContainer = pnidContainerVariant.value<QObject*>();
     QString pnidBasePath = this->appPath + "/contents/ui/pnids/";
-    QFileInfo pnidTest(pnidBasePath + "pnidTest.qml");
-    Pnid *pnid = new Pnid(pnidTest.completeBaseName(), QUrl::fromLocalFile(pnidTest.filePath()));
-    pnids.append(pnid);
-    QFileInfo pnidTest2(pnidBasePath + "other_pnid.qml");
-    Pnid *pnid2 = new Pnid(pnidTest2.completeBaseName(), QUrl::fromLocalFile(pnidTest2.filePath()));
-    pnids.append(pnid2);
-    //TODO: file discovery and loading the number of found files. just append more to pnids vector to load more tabs
+    QFileInfoList pnidFiles = findPnidFiles(pnidBasePath);
+
+    for (int i = 0; i < pnidFiles.length(); i++)
+    {
+        Pnid *pnid = new Pnid(pnidFiles.at(i).completeBaseName(), QUrl::fromLocalFile(pnidFiles.at(i).filePath()));
+        pnids.append(pnid);
+    }
 
     emit pnidsUpdated();
 }
@@ -169,43 +169,30 @@ void PnidHandler::registerSubObject(const QString &parentId, const QString &subI
 
 int PnidHandler::getCurrentZoom()
 {
+    std::cout << "getting zoom: " << activePnid << std::endl;
     return pnids.at(activePnid)->zoomScale;
 }
 
 void PnidHandler::setCurrentZoom(const int &zoom)
 {
+    //TODO: Theoretically this could be called from UI before the pnids are instantiated
+    //leading to an index out of range error and crash. Not sure if I should catch this here
+    //or leave it "broken" because otherwise the UI would need more complex code to "retry" setting
+    //and no user should be able to interact this quickly anyways. leaving it broken shows better
+    //if the UI is doing something wrong.
+    //TODO: Maybe this is properly fixed now? It seems it was an issue of the active pnid being set after
+    //the zoom level, not the zoom level being set/queried before pnid were added to the pnid list
+    std::cout << "setting zoom: " << activePnid << std::endl;
     pnids.at(activePnid)->zoomScale = zoom;
     emit currentZoomChanged();
 }
 
-/*void PnidHandler::pnidZoomStep(const int &direction)
+QFileInfoList PnidHandler::findPnidFiles(const QString &basePath)
 {
-    std::cout << "zoom: " << direction << std::endl;
-    //TODO: The length of the combo box list should not be hardcoded here
-    int newZoom = 0;
-    if (direction)
-    {
-        newZoom = pnids.at(activePnid)->zoomScale + 1;
-    }
-    else
-    {
-        newZoom = pnids.at(activePnid)->zoomScale - 1;
-    }
-    newZoom = qBound(0, newZoom, 11);
-    pnids.at(activePnid)->zoomScale = newZoom;
-    currentZoom = newZoom;
-    std::cout << "current zoom: " << currentZoom << std::endl;
-    emit currentZoomChanged(currentZoom);
-}*/
-
-/*void PnidHandler::pnidSetZoom(const int &zoomStep)
-{
-    int boundZoomStep = qBound(0, zoomStep, 11);
-    pnids.at(activePnid)->zoomScale = boundZoomStep;
-    currentZoom = boundZoomStep;
-    std::cout << "current zoom: " << currentZoom << std::endl;
-    emit currentZoomChanged(currentZoom);
-}*/
+    QDir directory(basePath);
+    QFileInfoList pnids = directory.entryInfoList(QStringList() << "*.qml", QDir::Files | QDir::NoDotAndDotDot);
+    return pnids;
+}
 
 QObject *PnidHandler::findSubObjectParent(const int &activePnid, const QString &id)
 {

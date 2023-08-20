@@ -20,7 +20,7 @@ Controls.ScrollView {
     //property double zoomScale: 1
 
     Component.onCompleted: {
-        pnidHandler.registerPnid(pnid)
+        pnidHandler.registerPnid(pnid);
     }
 
     Item {
@@ -138,14 +138,14 @@ Controls.ScrollView {
             valuePosition: "top"
         }
 
-        Shape {
+        /*Shape {
             PnidSvgLabel {
                 text: "Hello"
                 strokeWidthOverride: 2
                 x: 2500
                 y: 1500
             }
-        }
+        }*/
 
         Shape {
             ShapePath {

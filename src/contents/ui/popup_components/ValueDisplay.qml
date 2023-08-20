@@ -15,10 +15,6 @@ Item {
 
     Layout.margins: Kirigami.Units.largeSpacing
 
-    onValueChanged: {
-        display.text = value;
-    }
-
     RowLayout {
         id: mainLayout
         Controls.Label {
@@ -27,7 +23,7 @@ Item {
 
         Controls.Label {
             id: display
-            text: "-"
+            text: value
         }
     }
 }

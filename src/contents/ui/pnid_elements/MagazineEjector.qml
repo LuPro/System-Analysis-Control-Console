@@ -32,7 +32,8 @@ Item {
     //eg: having a speed setting on a servo additionally to its position slider
 
     //list of available sub objects (human readable). only needed for eventual UI builder
-    property var subObjectSlots: ["Ejector Extended", "Ejector Retracted"]
+    //TODO: add some metadata to this? eg: is value optional, is it readonly, writeonly, rw, ...
+    property var subObjectSlots: ["Ejector Extended", "Extend Ejector", "Ejector Retracted"]
     property var subObjectIds: undefined //list of strings
     property var subObjectGuiStates //list of double
     property var subObjectSetStates //list of double
@@ -113,15 +114,12 @@ Item {
     }
 
     onSubObjectGuiStatesChanged: {
-        console.log("sub object gui states changed", subObjectGuiStates);
     }
 
     onSubObjectSetStatesChanged: {
-        console.log("sub object set states changed", subObjectSetStates);
     }
 
     onSubObjectValuesChanged: {
-        console.log("sub object values changed", subObjectValues);
         piston.updatePistonPosition(subObjectValues[0]/maxValue);
     }
 
@@ -140,6 +138,15 @@ Item {
                 id: valueDisplay
                 value: pnidElement._formattedValue
             }
+            DigitalInput {
+                id: digitalInput
+                label: "Extend Slide"
+                value: pnidElement.subObjectValues[1] !== undefined ? pnidElement.subObjectValues[1] : false
+                guiState: pnidElement.subObjectGuiStates[1] !== undefined ? pnidElement.subObjectGuiStates[1] : false
+                setState: pnidElement.subObjectSetStates[1] !== undefined ? pnidElement.subObjectSetStates[1] : false
+                objectId: pnidElement.subObjectIds[1] !== undefined ? pnidElement.subObjectIds[1] : false
+            }
+
             Graph {
                 id: graphDisplay
                 label: "Cool Graph " + pnidElement.displayName

@@ -52,19 +52,12 @@ Kirigami.Page {
                 displayComponent: Controls.ComboBox {
                     id: zoomSelector
                     Component.onCompleted: {
-                        _zoomSelector = this;
-                        zoomSelector.currentIndex = 5;
-                        pnidHandler.setCurrentZoom(zoomSelector.currentIndex);
+                        zoomSelector.currentIndex = _defaultZoomStep;
                         currentIndex = Qt.binding(function() { return pnidHandler.currentZoom });
                     }
                     onActivated: {
-                        //pnidHandler.pnidSetZoom(zoomSelector.currentIndex);
-                        console.log("model", model[zoomSelector.currentIndex]);
                         zoomSet(zoomSelector.currentIndex);
                     }
-                    /*onCurrentIndexChanged: {
-                        zoomScale(model[zoomSelector.currentIndex].replace("%", "")/100);
-                    }*/
 
                     textRole: "text"
                     valueRole: "value"
@@ -95,6 +88,7 @@ Kirigami.Page {
     }
 
     property double _defaultScaleFactor: 0.125
+    property int _defaultZoomStep: 5
     property var _zoomSelector: undefined
     property var _zoomSelectorModel: [
         {text: "25%", value: 0.25},
@@ -106,15 +100,9 @@ Kirigami.Page {
         {text: "125%", value: 1.25},
         {text: "150%", value: 1.50},
         {text: "200%", value: 2.0},
-        {text: "400%", value: 4.0},
-        {text: "800%", value: 8.0},
+        {text: "300%", value: 3.0},
+        {text: "400%", value: 4.0}
     ]
-
-    function zoomScale(scale) {
-        console.log("zoom scale", scale);
-        console.log("pnid", pnidTabsContainer.itemAt(pnidTabs.currentIndex).item.zoomScale);
-        pnidTabsContainer.itemAt(pnidTabs.currentIndex).item.zoomScale = scale * _defaultScaleFactor;
-    }
 
     function zoomSet(newZoom) {
         pnidHandler.setCurrentZoom(newZoom);
@@ -122,11 +110,8 @@ Kirigami.Page {
 
     function zoomStep(type) {
         if (type === "in") {
-            //_zoomSelector.currentIndex = Math.min(_zoomSelector.currentIndex + 1, _zoomSelector.model.length - 1);
-            console.log("current", pnidHandler.currentZoom, pnidHandler.currentZoom + 1);
-            pnidHandler.setCurrentZoom(Math.min(pnidHandler.currentZoom + 1, _zoomSelector.model.length - 1));
+            pnidHandler.setCurrentZoom(Math.min(pnidHandler.currentZoom + 1, _zoomSelectorModel.length - 1));
         } else if (type === "out") {
-            //_zoomSelector.currentIndex = Math.max(_zoomSelector.currentIndex - 1, 0);
             pnidHandler.setCurrentZoom(Math.max(pnidHandler.currentZoom - 1, 0));
         }
     }
@@ -173,9 +158,13 @@ Kirigami.Page {
         target: pnidHandler
 
         function onCurrentZoomChanged() {
-            //console.log("currentindex", pnidTabs.currentIndex);
+            let currentZoom = pnidHandler.getCurrentZoom();
+            if (currentZoom === -1) {
+                currentZoom = _defaultZoomStep;
+            }
+
             let activePnid = pnidTabsContainer.itemAt(pnidTabs.currentIndex).item;
-            activePnid.zoomScale = _zoomSelectorModel[pnidHandler.getCurrentZoom()].value * _defaultScaleFactor;
+            activePnid.zoomScale = _zoomSelectorModel[currentZoom].value * _defaultScaleFactor;
         }
     }
 
@@ -234,8 +223,6 @@ Kirigami.Page {
                     text: modelData.name
                     onClicked: {
                         pnidHandler.setActivePnid(pnidTabs.currentIndex);
-                        //_zoomSelector.currentIndex = pnidHandler.getZoom(pnidTabs.currentIndex);
-                        console.log("clicked tab bar", pnidTabs.currentIndex);
                     }
                 }
             }

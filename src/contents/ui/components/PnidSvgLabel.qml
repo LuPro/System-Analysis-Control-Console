@@ -9,6 +9,7 @@ ShapePath {
 
     property string text: ""
     property int pixelSize: 150
+    property string position: pnidElement.labelPosition || "center"
     property var strokeWidthOverride: undefined
     property var x: undefined
     property var y: undefined
@@ -24,17 +25,17 @@ ShapePath {
     fillColor: Kirigami.Theme.textColor
     PathText {
         //TODO: unknown defaults to on the right, I'd rather have that default to center I think
-        x: label.x !== undefined ? label.x : (pnidElement.labelPosition === "center" ||
-           pnidElement.labelPosition === "top" ||
-           pnidElement.labelPosition === "bottom")
+        x: label.x !== undefined ? label.x : (position === "center" ||
+           position === "top" ||
+           position === "bottom")
            ? pnidElement.width/2 - width / 2 - 10 + label.xOffset
-           : pnidElement.labelPosition === "left" ? -60 - width + label.xOffset : pnidElement.width + 60 + label.xOffset
+           : position === "left" ? -60 - width + label.xOffset : pnidElement.width + 60 + label.xOffset
         //TODO: this defaults to bottom on unknown, similar issue as with x coord
-        y: label.y !== undefined ? label.y : (pnidElement.labelPosition === "center" ||
-            pnidElement.labelPosition === "left" ||
-            pnidElement.labelPosition === "right")
+        y: label.y !== undefined ? label.y : (position === "center" ||
+            position === "left" ||
+            position === "right")
             ? pnidElement.height/2 - height / 2 + label.yOffset
-            : pnidElement.labelPosition === "top" ? -60 - height + label.yOffset : pnidElement.height + 60 + label.yOffset
+            : position === "top" ? -60 - height + label.yOffset : pnidElement.height + 60 + label.yOffset
         font.family: "Montserrat"
         font.pixelSize: label.pixelSize
         font.weight: Font.Thin

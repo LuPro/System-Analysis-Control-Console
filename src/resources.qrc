@@ -18,6 +18,7 @@
         <file alias="GasBottle.qml">contents/ui/pnid_elements/GasBottle.qml</file>
         <file alias="MagazineEjector.qml">contents/ui/pnid_elements/MagazineEjector.qml</file>
         <file alias="LightBarrier.qml">contents/ui/pnid_elements/LightBarrier.qml</file>
+        <file alias="Motor.qml">contents/ui/pnid_elements/Motor.qml</file>
     </qresource>
     <qresource prefix="/pnids">
         <file>contents/ui/pnids/pnidTest.qml</file>
