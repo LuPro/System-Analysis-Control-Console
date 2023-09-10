@@ -9,6 +9,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <KConfig>
+#include <KIconThemes/kicontheme.h>
 
 #include <QDebug>
 
@@ -54,6 +55,7 @@ void addAboutInfo()
 
 int main(int argc, char *argv[])
 {
+    KIconTheme::current(); //workaround for Windows, otherwise no icons will load
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);

@@ -28,4 +28,5 @@ target_link_libraries(
     KF5::CoreAddons
     KF5::ConfigCore
     KF5::ConfigGui
+    KF5::IconThemes
 )
