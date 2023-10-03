@@ -5,12 +5,16 @@ add_executable(pnid_viewer
     tcpstreamhandler.cpp
     pnidhandler.h
     pnidhandler.cpp
+    config.h
+    config.cpp
     common.h
     common.cpp
     themehandler.h
     themehandler.cpp
     graphdatahandler.h
     graphdatahandler.cpp
+    confighandler.h
+    confighandler.cpp
     resources.qrc
 )
 
@@ -30,3 +34,5 @@ target_link_libraries(
     KF5::ConfigGui
     KF5::IconThemes
 )
+
+kconfig_add_kcfg_files(pnid_viewer GENERATE_MOC config.kcfgc)

@@ -8,8 +8,12 @@
 #include <KAboutData>
 #include <QQmlContext>
 #include <QQmlEngine>
-#include <KConfig>
 #include <KIconThemes/kicontheme.h>
+
+#include "config.h"
+#include <KConfig>
+#include <KSharedConfig>
+#include <KConfigGroup>
 
 #include <QDebug>
 
@@ -19,7 +23,10 @@
 #include "graphdatahandler.h"
 
 #define VERSION_STRING "0.1"
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 1
 #define APP_URI "com.tust.pnidviewer"
+#define APP_CONFIG_NAME "pnidviewerrc"
 
 void addAboutInfo()
 {
@@ -31,6 +38,8 @@ void addAboutInfo()
         KAboutLicense::LGPL,
         i18n("© 2023 Luis Büchi")
     );
+
+    about.setDesktopFileName(APP_URI);
 
     about.addAuthor(
         i18nc("@info:credit", "Luis Büchi"),
@@ -45,7 +54,7 @@ void addAboutInfo()
 
     qmlRegisterSingletonType(
         APP_URI,
-        0, 1,
+        VERSION_MAJOR, VERSION_MINOR,
         "About",
         [](QQmlEngine* engine, QJSEngine *) -> QJSValue {
             return engine->toScriptValue(KAboutData::applicationData());
@@ -67,6 +76,11 @@ int main(int argc, char *argv[])
 
     addAboutInfo();
 
+    Config *config = Config::self();
+    //config->setReadPnidPath("/home/luis/data/education/TU/Semester_8/Bachelorarbeit/PnID_Viewer/pnid_viewer/src/contents/ui/pnids/");
+    //config->save();
+    std::cout << "default: " << config->defaultClientNameValue().toStdString() << std::endl;
+    std::cout << "config xt: " << config->readPnidPath().toStdString() << std::endl;
 
     //this block is for antialiasing, but ideally I'd like that to not be for the entire app,
     //only for the pnid layer. ideally ideally it should already be drawn with subpixel accuracy since it's vectors
@@ -75,10 +89,11 @@ int main(int argc, char *argv[])
     QSurfaceFormat::setDefaultFormat(format);
 
     QQmlApplicationEngine engine;
+    qmlRegisterSingletonInstance(APP_URI, VERSION_MAJOR, VERSION_MINOR, "Config", config);
 
     TcpStreamHandler tcpHandler;
     engine.rootContext()->setContextProperty("tcpHandler", &tcpHandler);
-    PnidHandler pnidHandler(&engine, app.applicationDirPath());
+    PnidHandler pnidHandler(&engine, config->readPnidPath());
     engine.rootContext()->setContextProperty("pnidHandler", &pnidHandler);
     qmlRegisterType<GraphDataHandler>("com.tust.graphs", 1, 0, "GraphDataHandler"); // TODO: think of a better name
 

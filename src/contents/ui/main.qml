@@ -6,6 +6,8 @@ import org.kde.kirigami 2.20 as Kirigami
 
 import com.tust.pnidviewer 0.1
 
+import "components"
+
 // Provides basic features needed for all kirigami applications
 Kirigami.ApplicationWindow {
     // Unique identifier to reference this object
@@ -22,6 +24,12 @@ Kirigami.ApplicationWindow {
         isMenu: true
         actions: [
             Kirigami.Action {
+                text: "Settings"
+                icon.name: "settings-configure"
+                shortcut: StandardKey.Preferences
+                onTriggered: settingsDialogLoader.showDialog();
+            },
+            Kirigami.Action {
                 text: "About"
                 icon.name: "help-about"
                 onTriggered: pageStack.layers.push(aboutPage)
@@ -35,6 +43,18 @@ Kirigami.ApplicationWindow {
 
         Kirigami.AboutPage {
             aboutData: About
+        }
+    }
+
+    Item {
+        id: settingsDialogLoader
+
+        function showDialog() {
+            settingsDialog.visible = true;
+        }
+
+        SettingsDialog {
+            id: settingsDialog
         }
     }
 

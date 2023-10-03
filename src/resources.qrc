@@ -9,6 +9,7 @@
         <file alias="PnidUiLabel.qml">contents/ui/components/PnidUiLabel.qml</file>
         <file alias="PnidSvgLabel">contents/ui/components/PnidSvgLabel.qml</file>
         <file alias="DebugRectangle.qml">contents/ui/components/DebugRectangle.qml</file>
+        <file alias="SettingsDialog.qml">contents/ui/components/SettingsDialog.qml</file>
     </qresource>
     <qresource prefix="/pnid_elements">
         <file alias="ValveSolenoid.qml">contents/ui/pnid_elements/ValveSolenoid.qml</file>

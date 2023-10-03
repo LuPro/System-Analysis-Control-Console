@@ -45,7 +45,7 @@ class PnidHandler : public QObject
     Q_PROPERTY(int currentZoom READ getCurrentZoom WRITE setCurrentZoom NOTIFY currentZoomChanged)
 
 public:
-    PnidHandler(QQmlApplicationEngine *engine, QString appPath);
+    PnidHandler(QQmlApplicationEngine *engine, QString pnidPath);
 
 
 public slots:
@@ -89,9 +89,8 @@ private:
     QObject *pnidTabs;
 
     QQmlApplicationEngine *engine;
-    QString appPath;
+    QString pnidPath;
 
-    QObject *pnidRoot;
     int activePnid = 0;
     int currentZoom;
     QVector<Pnid*> pnids;

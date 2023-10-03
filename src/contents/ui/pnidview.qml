@@ -39,7 +39,7 @@ Kirigami.Page {
 
             Kirigami.Action {
                 id: zoomOutAction
-                visible: true
+                visible: !Kirigami.Settings.isMobile
                 icon.name: "file-zoom-out"
                 shortcut: StandardKey.ZoomOut
                 onTriggered: {
@@ -48,7 +48,7 @@ Kirigami.Page {
             },
             Kirigami.Action {
                 id: zoomSelectAction
-                visible: true
+                visible: !Kirigami.Settings.isMobile
                 displayComponent: Controls.ComboBox {
                     id: zoomSelector
                     Component.onCompleted: {
@@ -67,7 +67,7 @@ Kirigami.Page {
             },
             Kirigami.Action {
                 id: zoomInAction
-                visible: true
+                visible: !Kirigami.Settings.isMobile
                 icon.name: "file-zoom-in"
                 shortcut: StandardKey.ZoomIn
                 onTriggered: {

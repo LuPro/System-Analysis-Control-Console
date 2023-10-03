@@ -1,5 +1,7 @@
 #include "tcpstreamhandler.h"
 
+#include "config.h"
+
 TcpStreamHandler::TcpStreamHandler(QObject *parent)
     : QObject{parent}
 {
@@ -27,8 +29,10 @@ void TcpStreamHandler::connect(const QString &address, const quint16 &port)
     //TODO: check whether connection succeeded
     QObject::connect(clientSocket, &QTcpSocket::disconnected, this, &TcpStreamHandler::onForwardServerDisconnected);
     QObject::connect(clientSocket, &QTcpSocket::readyRead, this, &TcpStreamHandler::processForwardServerData);
-    QByteArray protocolMessage("{\"protocol\": \"native\", \"version\": 0, \"name\": \"PnID Viewer Frontend\"}");
-    //TODO: Replace this hardcoded name with something unique to the machine? kconfig?
+
+    Config *config = Config::self();
+    QString messageStr = "{\"protocol\": \"native\", \"version\": 0, \"name\": \"" + config->clientName() + "\"}";
+    QByteArray protocolMessage(messageStr.toStdString().c_str());
     protocolMessage.append('\0');
     clientSocket->write(protocolMessage);
     clientSocket->waitForBytesWritten(3000);

@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.15
 import org.kde.kirigami 2.20 as Kirigami
 import "components"
 
+import com.tust.pnidviewer 0.1
+
 Kirigami.Page {
     title: i18nc("@title", "Home")
     id: pageHome
@@ -30,6 +32,12 @@ Kirigami.Page {
             onServerConnect: (address, port) => {
                 tcpHandler.connect(address, port);
                 pageStack.replace(Qt.resolvedUrl("pnidview.qml"));
+            }
+        }
+        Controls.Button {
+            text: "pnid path"
+            onClicked: {
+                console.log(Config.readPnidPath);
             }
         }
     }

@@ -9,15 +9,10 @@ Pnid::Pnid(const QString &name, const QUrl &filePath)
     zoomScale = 5;
 }
 
-PnidHandler::PnidHandler(QQmlApplicationEngine *engine, QString appPath)
-    : engine(engine), appPath(appPath)
+PnidHandler::PnidHandler(QQmlApplicationEngine *engine, QString pnidPath)
+    : engine(engine), pnidPath(pnidPath)
 {
-    /*this->pnidRoot = rootObject->findChild<QObject *>("pnidTabsContainer");
-    if (!pnidRoot)
-    {
-        std::cout << "could not find pnid root" << std::endl;
-    }*/
-    std::cout << this->appPath.toStdString() << std::endl << std::flush;
+    std::cout << this->pnidPath.toStdString() << std::endl << std::flush;
 }
 
 void iterateQmlObjectChildren(QObject *object)
@@ -43,8 +38,7 @@ void printQmlEngineChildren(QQmlApplicationEngine *engine)
 void PnidHandler::loadPnids(QVariant pnidContainerVariant)
 {
     pnidContainer = pnidContainerVariant.value<QObject*>();
-    QString pnidBasePath = this->appPath + "/contents/ui/pnids/";
-    QFileInfoList pnidFiles = findPnidFiles(pnidBasePath);
+    QFileInfoList pnidFiles = findPnidFiles(pnidPath);
 
     for (int i = 0; i < pnidFiles.length(); i++)
     {
