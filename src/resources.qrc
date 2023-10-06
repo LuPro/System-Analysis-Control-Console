@@ -20,6 +20,7 @@
         <file alias="MagazineEjector.qml">contents/ui/pnid_elements/MagazineEjector.qml</file>
         <file alias="LightBarrier.qml">contents/ui/pnid_elements/LightBarrier.qml</file>
         <file alias="Motor.qml">contents/ui/pnid_elements/Motor.qml</file>
+        <file alias="RfidReadWrite.qml">contents/ui/pnid_elements/RfidReadWrite.qml</file>
     </qresource>
     <qresource prefix="/pnids">
         <file>contents/ui/pnids/pnidTest.qml</file>

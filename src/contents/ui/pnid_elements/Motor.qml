@@ -89,6 +89,20 @@ Item {
     }
 
     function applyStyling() {
+        if (value && !subObjectValues[0]) {
+            _formattedValue = "Forwards";
+            square.strokeColor = Kirigami.Theme.neutralTextColor;
+        } else if (!value && subObjectValues[0]) {
+            _formattedValue = "Backwards";
+            square.strokeColor = Kirigami.Theme.neutralTextColor;
+        } else if (!value && !subObjectValues[0]) {
+            _formattedValue = "Off";
+            square.strokeColor = Kirigami.Theme.textColor;
+            square.fillColor = "transparent";
+        } else {
+            _formattedValue = "Undefined";
+            square.strokeColor = Kirigami.Theme.negativeTextColor;
+        }
 
     }
 
@@ -115,6 +129,7 @@ Item {
     }
 
     onSubObjectValuesChanged: {
+        applyStyling();
     }
 
     Kirigami.ApplicationWindow {

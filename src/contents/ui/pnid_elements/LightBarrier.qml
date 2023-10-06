@@ -16,6 +16,8 @@ Item {
     property double guiState
     property double setState
     property double value
+    property bool activeLow: false
+
     property int strokeWidth: 2
     property string valuePosition: "bottom"
     property int rotation: 0 //rotation id: 0, 1, 2, 3 -> 90° steps
@@ -90,7 +92,7 @@ Item {
 
     function applyStyling() {
         //console.log("applying styling", value, setState);
-        if (value >= 1) {
+        if (activeLow && value == 0 || !activeLow && value != 0) {
             laser.strokeColor = Kirigami.Theme.positiveTextColor;
             _formattedValue = "Detected";
         } else {

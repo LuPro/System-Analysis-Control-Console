@@ -34,11 +34,5 @@ Kirigami.Page {
                 pageStack.replace(Qt.resolvedUrl("pnidview.qml"));
             }
         }
-        Controls.Button {
-            text: "pnid path"
-            onClicked: {
-                console.log(Config.readPnidPath);
-            }
-        }
     }
 }

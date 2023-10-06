@@ -8,8 +8,8 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: rotation % 2 ? 300 : 1200
-    height: rotation % 2 ? 1200 : 300
+    width: rotation % 2 ? 600 : 500
+    height: rotation % 2 ? 500 : 600
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
@@ -33,7 +33,7 @@ Item {
 
     //list of available sub objects (human readable). only needed for eventual UI builder
     //TODO: add some metadata to this? eg: is value optional, is it readonly, writeonly, rw, ...
-    property var subObjectSlots: ["Is Empty", "Extend Ejector", "Ejector Retracted"]
+    property var subObjectSlots: ["Ejector Extended", "Extend Ejector", "Ejector Retracted"]
     property var subObjectIds: undefined //list of strings
     property var subObjectGuiStates //list of double
     property var subObjectSetStates //list of double
@@ -120,7 +120,7 @@ Item {
     }
 
     onSubObjectValuesChanged: {
-        piston.updatePistonPosition(value/maxValue);
+        piston.updatePistonPosition(subObjectValues[0]/maxValue);
     }
 
     Kirigami.ApplicationWindow {
@@ -191,75 +191,7 @@ Item {
         }
 
         ShapePath {
-            id: content
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: "transparent"
-            strokeStyle: ShapePath.SolidLine
-            fillColor: Kirigami.Theme.highlightColor
-
-            startX: 700;  startY: 300
-            PathLine {
-                x: 700; y: 300 * Math.min(Math.max(subObjectValues[0], 0), 1)
-            }
-            PathLine {
-                x: 1200; y: 300 * Math.min(Math.max(subObjectValues[0], 0), 1)
-            }
-            PathLine {
-                x: 1200; y: 300
-            }
-            PathLine {
-                x: 700; y: 300
-            }
-        }
-        ShapePath {
-            id: container
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: Kirigami.Theme.textColor
-            strokeStyle: ShapePath.SolidLine
-            fillColor: "transparent"
-
-            startX: 700;  startY: 0
-            PathLine {
-                x: 1200; y: 0
-            }
-            PathLine {
-                x: 1200; y: 300
-            }
-            PathLine {
-                x: 700; y: 300
-            }
-            PathLine {
-                x: 700; y: 0
-            }
-        }
-        ShapePath {
-            id: piston
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: Kirigami.Theme.textColor
-            strokeStyle: ShapePath.SolidLine
-            fillColor: "transparent"
-
-            function updatePistonPosition(pos) {
-                let clampedPos = Math.max(Math.min(pos || 0, 1), 0);
-                let moveDistance = 250;
-                let piston = `M ${100+clampedPos*moveDistance} 0 l 0 300 m 100 0 l 0 -300 `;
-                let pistonPlunger = `M ${200+clampedPos*moveDistance} 100 l 500 0 l 0 100 l -500 0 `;
-                let springPath = `M ${200+clampedPos*moveDistance} 30 L ${300+clampedPos*moveDistance*3/4} 270
-                l 0 -70 m 0 -100 l 0 -70 L ${400+clampedPos*moveDistance*2/4} 270
-                l 0 -70 m 0 -100 l 0 -70 L ${500+clampedPos*moveDistance*1/4} 270
-                l 0 -70 m 0 -100 l 0 -70 L 600 270`;
-
-                pistonPath.path = piston + pistonPlunger + springPath;
-                //console.log("pistonPath", pistonPath.path);
-            }
-
-            PathSvg {
-                id: pistonPath
-                path: ""
-            }
-        }
-        ShapePath {
-            id: cylinder
+            id: box
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
@@ -267,10 +199,10 @@ Item {
 
             startX: 0;  startY: 0
             PathLine {
-                x: 600; y: 0
+                x: 500; y: 0
             }
             PathLine {
-                x: 600; y: 300
+                x: 500; y: 300
             }
             PathLine {
                 x: 0; y: 300
@@ -278,6 +210,25 @@ Item {
             PathLine {
                 x: 0; y: 0
             }
+        }
+
+        ShapePath {
+            strokeWidth: pnidElement._scaledStrokeWidth
+            strokeColor: Kirigami.Theme.textColor
+            strokeStyle: ShapePath.SolidLine
+            fillColor: "transparent"
+
+            PathSvg {
+                path: "M 185.721,321.611 a 100,100 0 0 0 34.834,18.961 M 279.445,340.572 a 100,100 0 0 0 34.834,-18.961"
+            }
+            PathSvg {
+                path: "M 147.701,354.631 a 150,150 0 0 0 72.854,37.186 M 279.445,391.816 a 150,150 0 0 0 72.854,-37.186"
+            }
+        }
+
+        PnidSvgLabel {
+            text: "RFID"
+            yOffset: -150
         }
     }
 
