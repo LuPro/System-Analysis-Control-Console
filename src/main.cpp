@@ -25,16 +25,16 @@
 #define VERSION_STRING "0.1"
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
-#define APP_URI "com.tust.pnidviewer"
-#define APP_CONFIG_NAME "pnidviewerrc"
+#define APP_URI "com.tust.sysanalysis"
+#define APP_CONFIG_NAME "sysanalysisrc"
 
 void addAboutInfo()
 {
     KAboutData about(
-        QStringLiteral("pnidviewer"),
-        i18nc("@title", "PnID Viewer"),
+        QStringLiteral("sysanalysis"),
+        i18nc("@title", "System Analysis & Control Console"),
         QStringLiteral(VERSION_STRING),
-        i18n("Application for viewing and interacting with PnIDs"),
+        i18n("Application for viewing and interacting with Systems"),
         KAboutLicense::LGPL,
         i18n("© 2023 Luis Büchi")
     );
@@ -69,10 +69,10 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    KLocalizedString::setApplicationDomain("pnid_viewer");
+    KLocalizedString::setApplicationDomain("sysanalysis");
     QCoreApplication::setOrganizationName(QStringLiteral("TUST"));
     QCoreApplication::setOrganizationDomain(QStringLiteral("tust.at"));
-    QCoreApplication::setApplicationName(QStringLiteral("PnID Viewer"));
+    QCoreApplication::setApplicationName(QStringLiteral("System Analysis & Control Console"));
 
     addAboutInfo();
 

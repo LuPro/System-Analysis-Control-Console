@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 import org.kde.kirigami 2.20 as Kirigami
 import "components"
 
-import com.tust.pnidviewer 0.1
+import com.tust.sysanalysis 0.1
 
 Kirigami.Page {
     title: i18nc("@title", "Home")
@@ -14,7 +14,7 @@ Kirigami.Page {
         anchors.centerIn: parent
         Kirigami.Heading {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Welcome to PnID Viewer"
+            text: "Welcome to System Analysis & Control Console"
             level: 1
         }
         Controls.Label {

@@ -5,12 +5,16 @@ import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Dialogs 1.3 as Dialogs
 import Qt.labs.platform 1.1 as Platform
 
-import com.tust.pnidviewer 0.1
+import com.tust.sysanalysis 0.1
 
 Kirigami.ApplicationWindow {
     id: dialog
 
     title: i18nc("@title:window", "Settings")
+
+    //TODO: These are just a crutch because it doesn't properly adapt to the content
+    maximumWidth: 800
+    maximumHeight: 600
 
     visible: false
     modality: Qt.ApplicationModal
@@ -65,10 +69,15 @@ Kirigami.ApplicationWindow {
             }
 
             RowLayout {
-                Kirigami.FormData.label: "Location to read PnIDs from:"
+                Kirigami.FormData.label: "PnID Location:"
                 Controls.TextField {
                     id: pnidPathInput
-                    placeholderText: Platform.StandardPaths.writableLocation(Platform.StandardPaths.AppDataLocation).toString().replace("file://", "")
+                    placeholderText: {
+                        if (Qt.platform.os === "windows") {
+                            return Platform.StandardPaths.writableLocation(Platform.StandardPaths.AppDataLocation).toString().replace("file:///", "");
+                        }
+                        return Platform.StandardPaths.writableLocation(Platform.StandardPaths.AppDataLocation).toString().replace("file://", "");
+                    }
 
                     onTextChanged: {
                         _isDirty = true;
@@ -85,15 +94,26 @@ Kirigami.ApplicationWindow {
                         id: pnidPathDialog
 
                         title: i18nc("@title:window", "Choose a Folder")
-                        folder: Config.readPnidPath === "" || Config.readPnidPath === undefined
-                                ? shortcuts.home
-                                : "file://" + Config.readPnidPath
+                        folder: {
+                            if (Config.readPnidPath === "" || Config.readPnidPath === undefined) {
+                                return shortcuts.home
+                            }
+
+                            if (Qt.platform.os === "windows") {
+                                return "file:///" + Config.readPnidPath
+                            }
+                            return "file://" + Config.readPnidPath
+                        }
 
                         selectFolder: true
 
                         onAccepted: {
                             const url = folder
-                            pnidPathInput.text = url.toString().replace("file://", "");
+                            if (Qt.platform.os === "windows") {
+                                pnidPathInput.text = url.toString().replace("file:///", "");
+                            } else {
+                                pnidPathInput.text = url.toString().replace("file://", "");
+                            }
                             _isDirty = true;
                         }
                     }

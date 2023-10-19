@@ -9,7 +9,7 @@ import "pnid_elements"
 import "pnids"
 
 Kirigami.Page {
-    title: i18nc("@title", "PnID")
+    title: i18nc("@title:window", "PnID")
     id: pagePnid
 
     actions {
@@ -225,12 +225,6 @@ Kirigami.Page {
                         pnidHandler.setActivePnid(pnidTabs.currentIndex);
                     }
                 }
-            }
-        }
-
-        Controls.Button {
-            text: "blank"
-            onClicked: {
             }
         }
 

@@ -15,10 +15,10 @@ ColumnLayout {
         currentIndex: 1
 
         Controls.TabButton {
-            text: "Client"
+            text: "Secondary"
         }
         Controls.TabButton {
-            text: "Server"
+            text: "Primary"
         }
     }
 
@@ -31,7 +31,7 @@ ColumnLayout {
             wideMode: backendConnection.wideMode
 
             Controls.Label {
-                text: "Connect to already running Server"
+                text: "Connect to already running primary frontend"
             }
             Controls.TextField {
                 id: connectForwardServerAddressField

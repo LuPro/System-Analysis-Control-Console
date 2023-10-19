@@ -4,7 +4,7 @@ import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
 import org.kde.kirigami 2.20 as Kirigami
 
-import com.tust.pnidviewer 0.1
+import com.tust.sysanalysis 0.1
 
 import "components"
 
@@ -16,7 +16,7 @@ Kirigami.ApplicationWindow {
     // Window title
     // i18nc() makes a string translatable
     // and provides additional context for the translators
-    title: i18nc("@title:window", "PnID Viewer")
+    title: i18nc("@title:window", "System Analysis & Control Console")
 
     contextDrawer: Kirigami.ContextDrawer {}
 
