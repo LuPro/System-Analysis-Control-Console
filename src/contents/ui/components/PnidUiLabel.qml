@@ -11,6 +11,7 @@ Controls.Label {
     property int xOffset: 0
     property int yOffset: 0
 
+    property color labelColor: Kirigami.Theme.textColor
     property string size: "medium"
     property string position: "bottom"
 
@@ -53,4 +54,6 @@ Controls.Label {
                               ? pnidElement.horizontalCenter : undefined
     anchors.verticalCenter: (textLabel.position == "left") || (textLabel.position == "right")
                             ? pnidElement.verticalCenter : undefined
+
+    color: labelColor
 }

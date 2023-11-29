@@ -12,27 +12,7 @@ Pnid::Pnid(const QString &name, const QUrl &filePath)
 PnidHandler::PnidHandler(QQmlApplicationEngine *engine, QString pnidPath)
     : engine(engine), pnidPath(pnidPath)
 {
-    std::cout << this->pnidPath.toStdString() << std::endl << std::flush;
-}
 
-void iterateQmlObjectChildren(QObject *object)
-{
-    const QObjectList children = object->children();
-    for (QObject *child : children) {
-        if (object->objectName().length() > 0 || true)
-        {
-            std::cout << "Object Name: " << object->objectName().toStdString() << std::endl;
-            std::cout << "Object Class: " << object->metaObject()->className() << std::endl << std::endl << std::flush;
-        }
-        iterateQmlObjectChildren(child);
-    }
-}
-
-void printQmlEngineChildren(QQmlApplicationEngine *engine)
-{
-    QList<QObject*> rootObjects = engine->rootObjects();
-    std::cout << "root objects: " << rootObjects.size() << std::endl << std::flush;
-    iterateQmlObjectChildren(rootObjects.at(0));
 }
 
 void PnidHandler::loadPnids(QVariant pnidContainerVariant)
@@ -80,6 +60,7 @@ void PnidHandler::processPackets(const QVector<DataPacket> &packets)
         int activePnid = pnidContainer->property("currentIndex").toInt();
         //right now I'm only updating the currently visible pnid, this should be a setting somewhere I think
         QObject *pnidElement = pnids.at(activePnid)->pnid->findChild<QObject*>(packet.m_id);
+        std::cout << "trying to find packet in pnid: " << activePnid << std::endl;
         bool isSubObject = false;
         if (!pnidElement)
         {

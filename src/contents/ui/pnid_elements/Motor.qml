@@ -103,7 +103,6 @@ Item {
             _formattedValue = "Undefined";
             square.strokeColor = Kirigami.Theme.negativeTextColor;
         }
-
     }
 
     onDisplayNameChanged: {
@@ -145,8 +144,8 @@ Item {
 
             ValueDisplay {
                 id: valueDisplay
-                label: pnidElement.subObjectIds !== undefined ? "Forwards" : undefined
-                value: pnidElement._formattedValue
+                label: pnidElement.subObjectIds !== undefined ? "Forwards" : "On/Off"
+                value: pnidElement.value ? "On" : "Off"
             }
             DigitalInput {
                 id: checkboxInput
@@ -161,8 +160,8 @@ Item {
                 label: "Backwards"
                 value: pnidElement.subObjectIds !== undefined
                        ? pnidElement.subObjectValues[0] !== undefined
-                         ? pnidElement.subObjectValues[0] : ""
-                       : ""
+                         ? pnidElement.subObjectValues[0] : "On"
+                       : "Off"
             }
             DigitalInput {
                 visible: pnidElement.subObjectIds !== undefined

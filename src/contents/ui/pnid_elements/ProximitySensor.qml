@@ -8,8 +8,8 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: rotation % 2 ? 800 : 100
-    height: rotation % 2 ? 100 : 800
+    width: rotation % 2 ? 350 : 300
+    height: rotation % 2 ? 300 : 350
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
@@ -20,6 +20,8 @@ Item {
 
     property int strokeWidth: 2
     property string valuePosition: "bottom"
+    property string label: "Proximity"
+    property string labelPosition: "top"
     property int rotation: 0 //rotation id: 0, 1, 2, 3 -> 90° steps
 
     property string unit
@@ -52,6 +54,9 @@ Item {
                 pnidHandler.registerSubObject(pnidElement.objectName, subObject);
             }
         }
+
+        //hack because color doesn't apply properly otherwise on detectedObject
+        //detectedObject.strokeColor = "transparent";
     }
 
     function setSubObjectGuiState(subId: string, subValue: double) {
@@ -91,12 +96,14 @@ Item {
     }
 
     function applyStyling() {
-        //console.log("applying styling", value, setState);
         if (activeLow && value == 0 || !activeLow && value != 0) {
-            laser.strokeColor = Kirigami.Theme.positiveTextColor;
+            detectedObject.strokeColor = Kirigami.Theme.positiveTextColor;
+            detector.fillColor = Kirigami.Theme.positiveTextColor;
             _formattedValue = "Detected";
         } else {
-            laser.strokeColor = Kirigami.Theme.textColor;
+            detectedObjectPath.path = "";
+            detectedObject.strokeColor = "transparent";
+            detector.fillColor = "transparent";
             _formattedValue = "Not Detected";
         }
     }
@@ -185,7 +192,7 @@ Item {
         }
 
         ShapePath {
-            id: topElement
+            id: detector
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
@@ -193,63 +200,31 @@ Item {
 
             startX: 0;  startY: 0
             PathLine {
-                x: 100; y: 0
+                x: 300; y: 0
             }
             PathLine {
-                x: 100; y: 100
+                x: 300; y: 150
             }
             PathLine {
-                x: 60; y: 140
-            }
-            PathLine {
-                x: 40; y: 140
-            }
-            PathLine {
-                x: 0; y: 100
+                x: 0; y: 150
             }
             PathLine {
                 x: 0; y: 0
             }
         }
         ShapePath {
-            id: bottomElement
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: Kirigami.Theme.textColor
-            strokeStyle: ShapePath.SolidLine
-            fillColor: "transparent"
-
-            startX: 0;  startY: 800
-            PathLine {
-                x: 100; y: 800
-            }
-            PathLine {
-                x: 100; y: 700
-            }
-            PathLine {
-                x: 60; y: 660
-            }
-            PathLine {
-                x: 40; y: 660
-            }
-            PathLine {
-                x: 0; y: 700
-            }
-            PathLine {
-                x: 0; y: 800
-            }
-        }
-        ShapePath {
-            id: laser
-            strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: Kirigami.Theme.textColor
+            id: detectedObject
+            strokeWidth: pnidElement._scaledStrokeWidth / 1.5
+            strokeColor: Kirigami.Theme.positiveTextColor //TODO: should be "transparent", but due to Qt bug that breaks and makes it transparent forever
             strokeStyle: ShapePath.DashLine
-            dashPattern: [3, 3]
+            dashPattern: [1, 4]
             dashOffset: 0.2
             fillColor: "transparent"
 
             startX: 50; startY: 140
-            PathLine {
-                x: 50; y: 660
+            PathSvg {
+                id: detectedObjectPath
+                path: "M 0 350 A 200 200 0 0 1 300 350" //empty because hack because color doesn't apply properly, see applyStyling() for path data
             }
         }
     }
@@ -257,5 +232,11 @@ Item {
     PnidUiLabel {
         text: pnidElement._formattedValue
         position: pnidElement.valuePosition
+        yOffset: pnidElement.labelPosition == "bottom" && pnidElement.valuePosition == "bottom" ? 150 : 0
+    }
+
+    PnidUiLabel {
+        text: pnidElement.label
+        position: pnidElement.labelPosition
     }
 }

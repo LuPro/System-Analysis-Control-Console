@@ -33,7 +33,7 @@ Item {
 
     //list of available sub objects (human readable). only needed for eventual UI builder
     //TODO: add some metadata to this? eg: is value optional, is it readonly, writeonly, rw, ...
-    property var subObjectSlots: ["Is Empty", "Extend Ejector", "Ejector Retracted"]
+    property var subObjectSlots: ["Is Empty", "Extend Ejector", "Ejector Retracted", "Ejector Extended"]
     property var subObjectIds: undefined //list of strings
     property var subObjectGuiStates //list of double
     property var subObjectSetStates //list of double
@@ -149,7 +149,7 @@ Item {
 
             Graph {
                 id: graphDisplay
-                label: "Cool Graph " + pnidElement.displayName
+                label: pnidElement.displayName
                 value: pnidElement.value
 
                 Layout.fillWidth: true

@@ -21,6 +21,10 @@
         <file alias="LightBarrier.qml">contents/ui/pnid_elements/LightBarrier.qml</file>
         <file alias="Motor.qml">contents/ui/pnid_elements/Motor.qml</file>
         <file alias="RfidReadWrite.qml">contents/ui/pnid_elements/RfidReadWrite.qml</file>
+        <file alias="Barrier.qml">contents/ui/pnid_elements/Barrier.qml</file>
+        <file alias="Switch.qml">contents/ui/pnid_elements/Switch.qml</file>
+        <file alias="ReflectivitySensor.qml">contents/ui/pnid_elements/ReflectivitySensor.qml</file>
+        <file alias="ProximitySensor.qml">contents/ui/pnid_elements/ProximitySensor.qml</file>
     </qresource>
     <qresource prefix="/pnids">
         <file>contents/ui/pnids/pnidTest.qml</file>

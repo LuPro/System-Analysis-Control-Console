@@ -33,7 +33,7 @@ Item {
     //eg: having a speed setting on a servo additionally to its position slider
 
     //list of available sub objects (human readable). only needed for eventual UI builder
-    property var subObjectSlots: []
+    property var subObjectSlots: ["Barrier Open"]
     property var subObjectIds: undefined //list of strings
     property var subObjectGuiStates //list of double
     property var subObjectSetStates //list of double
@@ -91,13 +91,18 @@ Item {
     }
 
     function applyStyling() {
-        //console.log("applying styling", value, setState);
-        if (activeLow && value == 0 || !activeLow && value != 0) {
-            laser.strokeColor = Kirigami.Theme.positiveTextColor;
-            _formattedValue = "Detected";
+        //TODO: this doesn't cover the case if no sub object value is hooked up I think
+        if (activeLow && (value == 0 && subObjectValues[0] !== 0) ||
+                !activeLow && (value != 0 && subObjectValues[0] === 0)) {
+            barrier.strokeColor = Kirigami.Theme.textColor;
+            _formattedValue = "Blocking";
+        } else if (activeLow && (value != 0 && subObjectValues[0] === 0) ||
+                   !activeLow && (value == 0 && subObjectValues[0] !== 0)) {
+            barrier.strokeColor = "transparent";
+            _formattedValue = "Open";
         } else {
-            laser.strokeColor = Kirigami.Theme.textColor;
-            _formattedValue = "Not Detected";
+            _formattedValue = "Undefined";
+            barrier.strokeColor = Kirigami.Theme.negativeTextColor;
         }
     }
 
@@ -140,6 +145,13 @@ Item {
             ValueDisplay {
                 id: valueDisplay
                 value: pnidElement._formattedValue
+            }
+            DigitalInput  {
+                id: checkboxInput
+                label: "Open/Close"
+                value: pnidElement.value
+                guiState: pnidElement.guiState
+                setState: pnidElement.setState
             }
             Graph {
                 id: graphDisplay
@@ -199,12 +211,6 @@ Item {
                 x: 100; y: 100
             }
             PathLine {
-                x: 60; y: 140
-            }
-            PathLine {
-                x: 40; y: 140
-            }
-            PathLine {
                 x: 0; y: 100
             }
             PathLine {
@@ -226,12 +232,6 @@ Item {
                 x: 100; y: 700
             }
             PathLine {
-                x: 60; y: 660
-            }
-            PathLine {
-                x: 40; y: 660
-            }
-            PathLine {
                 x: 0; y: 700
             }
             PathLine {
@@ -239,17 +239,15 @@ Item {
             }
         }
         ShapePath {
-            id: laser
+            id: barrier
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
-            strokeStyle: ShapePath.DashLine
-            dashPattern: [3, 3]
-            dashOffset: 0.2
+            strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 50; startY: 140
+            startX: 50; startY: 100
             PathLine {
-                x: 50; y: 660
+                x: 50; y: 700
             }
         }
     }

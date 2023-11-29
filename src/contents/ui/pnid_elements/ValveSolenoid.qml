@@ -170,7 +170,7 @@ Item {
             }
             DigitalInput {
                 id: checkboxInput
-                label: "this is a cool label"
+                label: "Open/Close"
                 value: pnidElement.value
                 guiState: pnidElement.guiState
                 setState: pnidElement.setState

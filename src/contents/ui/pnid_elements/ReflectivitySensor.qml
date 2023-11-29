@@ -8,14 +8,15 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: rotation % 2 ? 800 : 100
-    height: rotation % 2 ? 100 : 800
+    width: rotation % 2 ? 400 : 300
+    height: rotation % 2 ? 300 : 400
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
     property double guiState
     property double setState
     property double value
+    property bool digital: true
     property bool activeLow: false
 
     property int strokeWidth: 2
@@ -93,11 +94,22 @@ Item {
     function applyStyling() {
         //console.log("applying styling", value, setState);
         if (activeLow && value == 0 || !activeLow && value != 0) {
-            laser.strokeColor = Kirigami.Theme.positiveTextColor;
-            _formattedValue = "Detected";
+            laserUnreflected.strokeColor = "transparent";
+            laserReflected.strokeColor = Kirigami.Theme.positiveTextColor;
+            laserReflected.strokeWidth = pnidElement._scaledStrokeWidth;
+            if (digital) {
+                _formattedValue = "Detected";
+            } else {
+                _formattedValue = value + unit;
+            }
         } else {
-            laser.strokeColor = Kirigami.Theme.textColor;
-            _formattedValue = "Not Detected";
+            laserUnreflected.strokeColor = Kirigami.Theme.textColor;
+            laserReflected.strokeColor = "transparent";
+            if (digital) {
+                _formattedValue = "Not Detected";
+            } else {
+                _formattedValue = value + unit;
+            }
         }
     }
 
@@ -185,7 +197,7 @@ Item {
         }
 
         ShapePath {
-            id: topElement
+            id: emitter
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
@@ -212,34 +224,28 @@ Item {
             }
         }
         ShapePath {
-            id: bottomElement
+            id: detector
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 0;  startY: 800
+            startX: 200;  startY: 0
             PathLine {
-                x: 100; y: 800
+                x: 300; y: 0
             }
             PathLine {
-                x: 100; y: 700
+                x: 300; y: 100
             }
             PathLine {
-                x: 60; y: 660
+                x: 200; y: 100
             }
             PathLine {
-                x: 40; y: 660
-            }
-            PathLine {
-                x: 0; y: 700
-            }
-            PathLine {
-                x: 0; y: 800
+                x: 200; y: 0
             }
         }
         ShapePath {
-            id: laser
+            id: laserUnreflected
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.DashLine
@@ -249,7 +255,24 @@ Item {
 
             startX: 50; startY: 140
             PathLine {
-                x: 50; y: 660
+                x: 50; y: 400
+            }
+        }
+        ShapePath {
+            id: laserReflected
+            strokeWidth: pnidElement._scaledStrokeWidth
+            strokeColor: Kirigami.Theme.positiveTextColor //TODO: should be "transparent", but due to Qt bug that breaks and makes it transparent forever
+            strokeStyle: ShapePath.DashLine
+            dashPattern: [3, 3]
+            dashOffset: 0.2
+            fillColor: "transparent"
+
+            startX: 50; startY: 140
+            PathLine {
+                x: 50; y: 300
+            }
+            PathLine {
+                x: 250; y: 100
             }
         }
     }

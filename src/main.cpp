@@ -8,6 +8,7 @@
 #include <KAboutData>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QQuickStyle>
 #include <KIconThemes/kicontheme.h>
 
 #include "config.h"
@@ -65,6 +66,12 @@ void addAboutInfo()
 int main(int argc, char *argv[])
 {
     KIconTheme::current(); //workaround for Windows, otherwise no icons will load
+#ifdef Q_OS_WIN
+    if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
+        QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
+    }
+#endif
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);
@@ -77,10 +84,6 @@ int main(int argc, char *argv[])
     addAboutInfo();
 
     Config *config = Config::self();
-    //config->setReadPnidPath("/home/luis/data/education/TU/Semester_8/Bachelorarbeit/PnID_Viewer/pnid_viewer/src/contents/ui/pnids/");
-    //config->save();
-    std::cout << "default: " << config->defaultClientNameValue().toStdString() << std::endl;
-    std::cout << "config xt: " << config->readPnidPath().toStdString() << std::endl;
 
     //this block is for antialiasing, but ideally I'd like that to not be for the entire app,
     //only for the pnid layer. ideally ideally it should already be drawn with subpixel accuracy since it's vectors

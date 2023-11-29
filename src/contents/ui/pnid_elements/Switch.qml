@@ -8,8 +8,8 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: rotation % 2 ? 800 : 100
-    height: rotation % 2 ? 100 : 800
+    width: rotation % 2 ? 300 : 500
+    height: rotation % 2 ? 500 : 300
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
@@ -91,13 +91,14 @@ Item {
     }
 
     function applyStyling() {
-        //console.log("applying styling", value, setState);
         if (activeLow && value == 0 || !activeLow && value != 0) {
-            laser.strokeColor = Kirigami.Theme.positiveTextColor;
-            _formattedValue = "Detected";
+            switchOpen.strokeColor = Kirigami.Theme.textColor;
+            switchClosed.strokeColor = "transparent";
+            _formattedValue = "Deflecting";
         } else {
-            laser.strokeColor = Kirigami.Theme.textColor;
-            _formattedValue = "Not Detected";
+            switchOpen.strokeColor = "transparent";
+            switchClosed.strokeColor = Kirigami.Theme.textColor;
+            _formattedValue = "Pass Through";
         }
     }
 
@@ -141,6 +142,13 @@ Item {
                 id: valueDisplay
                 value: pnidElement._formattedValue
             }
+            DigitalInput  {
+                id: checkboxInput
+                label: "Deflect"
+                value: pnidElement.value
+                guiState: pnidElement.guiState
+                setState: pnidElement.setState
+            }
             Graph {
                 id: graphDisplay
                 label: pnidElement.displayName
@@ -180,76 +188,43 @@ Item {
                 {
                     popup.visible = true && (!pnidElement.disablePopup);;
                 }
-
             }
         }
 
         ShapePath {
-            id: topElement
+            id: switchClosed
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 0;  startY: 0
+            startX: 0;  startY: 300
             PathLine {
-                x: 100; y: 0
-            }
-            PathLine {
-                x: 100; y: 100
-            }
-            PathLine {
-                x: 60; y: 140
-            }
-            PathLine {
-                x: 40; y: 140
-            }
-            PathLine {
-                x: 0; y: 100
-            }
-            PathLine {
-                x: 0; y: 0
+                x: 500; y: 300
             }
         }
         ShapePath {
-            id: bottomElement
+            id: switchOpen
             strokeWidth: pnidElement._scaledStrokeWidth
-            strokeColor: Kirigami.Theme.textColor
+            strokeColor: "transparent"
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 0;  startY: 800
+            startX: 0;  startY: 300
             PathLine {
-                x: 100; y: 800
-            }
-            PathLine {
-                x: 100; y: 700
-            }
-            PathLine {
-                x: 60; y: 660
-            }
-            PathLine {
-                x: 40; y: 660
-            }
-            PathLine {
-                x: 0; y: 700
-            }
-            PathLine {
-                x: 0; y: 800
+                x: 500; y: 0
             }
         }
         ShapePath {
-            id: laser
+            id: circleCommon
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
-            strokeStyle: ShapePath.DashLine
-            dashPattern: [3, 3]
-            dashOffset: 0.2
-            fillColor: "transparent"
+            strokeStyle: ShapePath.SolidLine
+            fillColor: Kirigami.Theme.backgroundColor
 
-            startX: 50; startY: 140
-            PathLine {
-                x: 50; y: 660
+            startX: 0; startY: 300
+            PathSvg {
+                path: "M -25 300 a 25 25 0 0 1 50 0 a 25 25 0 0 1 -50 0 M 475 300 a 25 25 0 0 1 50 0 a 25 25 0 0 1 -50 0 M 475 0 a 25 25 0 0 1 50 0 a 25 25 0 0 1 -50 0"
             }
         }
     }

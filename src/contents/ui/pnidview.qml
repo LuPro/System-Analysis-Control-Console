@@ -252,6 +252,10 @@ Kirigami.Page {
                     objectName: modelData.name
                     source: modelData.filePath
                 }
+                Component.onCompleted: {
+                    //TODO: THIS IS JUST FOR TESTING TO MAKE IT QUICKER, REMOVE ONCE DONE
+                    //pnidTabs.currentIndex = 2;
+                }
             }
         }
     }
