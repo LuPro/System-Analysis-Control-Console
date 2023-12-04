@@ -8,34 +8,32 @@ import "../components"
 
 Item {
     id: pnidElement
-    width: rotation % 2 ? 350 : 300
-    height: rotation % 2 ? 300 : 350
+    width: rotation % 2 ? 600 : 600
+    height: rotation % 2 ? 600 : 600
     /*layer.enabled: true //this should be antialiasing
     layer.samples: 4*/
     property string displayName
     property double guiState
     property double setState
     property double value
-    property bool activeLow: false
-
+    property double maxValue: 1
     property int strokeWidth: 2
     property string valuePosition: "bottom"
-    property string label: "Proximity"
-    property string labelPosition: "top"
     property int rotation: 0 //rotation id: 0, 1, 2, 3 -> 90° steps
 
     property string unit
     property string content
     property var connections //list of connection points that other elements can connect to
 
-    property bool checkSensTolerance: false
+    property bool checkSensTolerance: true
 
     property bool disablePopup: false
-    //popup lists are for elements that aren't following the main value of the pnid element
+    //sub objects are for elements that aren't following the main value of the pnid element
     //eg: having a speed setting on a servo additionally to its position slider
 
     //list of available sub objects (human readable). only needed for eventual UI builder
-    property var subObjectSlots: []
+    //TODO: add some metadata to this? eg: is value optional, is it readonly, writeonly, rw, ...
+    property var subObjectSlots: ["ArmRetracted", "SuctionCupDown", "SuctionCupIsUp", "VacuumOn", "WorkpiecePickedUp"]
     property var subObjectIds: undefined //list of strings
     property var subObjectGuiStates //list of double
     property var subObjectSetStates //list of double
@@ -55,8 +53,7 @@ Item {
             }
         }
 
-        //hack because color doesn't apply properly otherwise on detectedObject
-        //detectedObject.strokeColor = "transparent";
+        piston.updatePistonPosition(0);
     }
 
     function setSubObjectGuiState(subId: string, subValue: double) {
@@ -85,6 +82,7 @@ Item {
         }
         subObjectValuesChanged();
     }
+
     function isInTolerance(measurement, reference) {
         //console.log("check is in tolerance", measurement, reference)
         if (!checkSensTolerance || measurement === reference) {
@@ -96,15 +94,28 @@ Item {
     }
 
     function applyStyling() {
-        if (activeLow && value == 0 || !activeLow && value != 0) {
-            detectedObject.strokeColor = Kirigami.Theme.positiveTextColor;
-            detector.fillColor = Kirigami.Theme.positiveTextColor;
-            _formattedValue = "Detected";
+        armBase.updateArmPos(value/maxValue);
+        if (subObjectValues[3]) {
+            suctionArm.strokeColor = Kirigami.Theme.neutralTextColor;
         } else {
-            detectedObjectPath.path = "";
-            detectedObject.strokeColor = "transparent";
-            detector.fillColor = "transparent";
-            _formattedValue = "Not Detected";
+            suctionArm.strokeColor = Kirigami.Theme.textColor;
+        }
+
+        if (subObjectValues[4]) {
+            object.strokeColor = Kirigami.Theme.textColor;
+            object.strokeStyle = ShapePath.SolidLine;
+        } else {
+            object.strokeStyle = ShapePath.DashLine;
+            //TODO: Commented out due to Qt bug, otherwise it's invisible forever
+            //object.strokeColor = "transparent";
+        }
+
+        if (maxValue == 1) {
+            if (value) {
+                _formattedValue = "Extended";
+            } else {
+                _formattedValue = "Retracted";
+            }
         }
     }
 
@@ -131,6 +142,7 @@ Item {
     }
 
     onSubObjectValuesChanged: {
+        applyStyling();
     }
 
     Kirigami.ApplicationWindow {
@@ -146,8 +158,18 @@ Item {
 
             ValueDisplay {
                 id: valueDisplay
-                value: pnidElement._formattedValue
+                value: pnidElement.value
+                label: "Arm Extended"
             }
+            DigitalInput {
+                id: digitalInput
+                label: "Extend Slide"
+                value: pnidElement.subObjectValues[1] !== undefined ? pnidElement.subObjectValues[1] : false
+                guiState: pnidElement.subObjectGuiStates[1] !== undefined ? pnidElement.subObjectGuiStates[1] : false
+                setState: pnidElement.subObjectSetStates[1] !== undefined ? pnidElement.subObjectSetStates[1] : false
+                objectId: pnidElement.subObjectIds[1] !== undefined ? pnidElement.subObjectIds[1] : false
+            }
+
             Graph {
                 id: graphDisplay
                 label: pnidElement.displayName
@@ -185,45 +207,80 @@ Item {
                 }
                 else
                 {
-                    popup.visible = true && (!pnidElement.disablePopup);;
+                    popup.visible = true && (!pnidElement.disablePopup);
                 }
 
             }
         }
 
         ShapePath {
-            id: detector
+            id: rail
+            strokeWidth: pnidElement._scaledStrokeWidth
+            strokeColor: Kirigami.Theme.textColor
+            strokeStyle: ShapePath.SolidLine
+            fillColor: Kirigami.Theme.highlightColor
+
+            startX: 0;  startY: 0
+            PathLine {
+                x: 600; y: 0
+            }
+        }
+        ShapePath {
+            id: armBase
             strokeWidth: pnidElement._scaledStrokeWidth
             strokeColor: Kirigami.Theme.textColor
             strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 0;  startY: 0
-            PathLine {
-                x: 300; y: 0
+            function updateArmPos(pos) {
+                console.log("arm % pos", pos);
+                let clampedPos = Math.max(Math.min(pos || 0, 1), 0);
+                let basePos = 50 + clampedPos*400;
+                armBasePath.path = `M ${basePos} 25 l 100 0 l 0 100 l -40 40 l -20 0 l -40 -40 l 0 -100`;
+                //TODO: this currently uses the same max value as arm base
+                suctionArm.updateExtension(subObjectValues[1]/maxValue, basePos + 50);
             }
-            PathLine {
-                x: 300; y: 150
-            }
-            PathLine {
-                x: 0; y: 150
-            }
-            PathLine {
-                x: 0; y: 0
+
+            PathSvg {
+                id: armBasePath
+                path: "M 50 25 l 100 0 l 0 100 l -40 40 l -20 0 l -40 -40 l 0 -100"
             }
         }
         ShapePath {
-            id: detectedObject
-            strokeWidth: pnidElement._scaledStrokeWidth / 1.5
-            strokeColor: Kirigami.Theme.positiveTextColor //TODO: should be "transparent", but due to Qt bug that breaks and makes it transparent forever
-            strokeStyle: ShapePath.DashLine
-            dashPattern: [1, 4]
+            id: suctionArm
+            strokeWidth: pnidElement._scaledStrokeWidth
+            strokeColor: Kirigami.Theme.textColor
+            strokeStyle: ShapePath.SolidLine
             fillColor: "transparent"
 
-            startX: 50; startY: 140
+            function updateExtension(extension, basePos) {
+                let clampedExtension = Math.max(Math.min(extension || 0, 1), 0);
+                armPath.path = `M ${basePos} 165 l 0 ${65 + clampedExtension * 280} l -50 40 l 100 0 l -50 -40`;
+                console.log("base pos", basePos, 270 + clampedExtension * 280, "extension", clampedExtension, extension)
+                object.updatePosition(basePos, 270 + clampedExtension * 280);
+            }
+
             PathSvg {
-                id: detectedObjectPath
-                path: "M 0 350 A 200 200 0 0 1 300 350" //empty because hack because color doesn't apply properly, see applyStyling() for path data
+                id: armPath
+                path: "M 100 165 l 0 65 l -50 40 l 100 0 l -50 -40"
+            }
+        }
+        ShapePath {
+            id: object
+            strokeWidth: pnidElement._scaledStrokeWidth
+            strokeColor: Kirigami.Theme.textColor
+            strokeStyle: ShapePath.SolidLine
+            dashPattern: [1, 100]
+            dashOffset: 5
+            fillColor: "transparent"
+
+            function updatePosition(baseX, baseY) {
+                objectPath.path = `M ${baseX} ${baseY} m -75 0 l 0 50 l 150 0 l 0 -50 l -150 0`;
+            }
+
+            PathSvg {
+                id: objectPath
+                path: "M 25 270 l 150 0 l 0 50 l -150 0 l 0 -50"
             }
         }
     }
@@ -231,11 +288,5 @@ Item {
     PnidUiLabel {
         text: pnidElement._formattedValue
         position: pnidElement.valuePosition
-        yOffset: pnidElement.labelPosition == "bottom" && pnidElement.valuePosition == "bottom" ? 150 : 0
-    }
-
-    PnidUiLabel {
-        text: pnidElement.label
-        position: pnidElement.labelPosition
     }
 }

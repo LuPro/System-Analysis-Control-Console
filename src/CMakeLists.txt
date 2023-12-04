@@ -1,5 +1,5 @@
 set(CMAKE_AUTOMOC ON)
-add_executable(pnid_viewer
+add_executable(sysanalysis
     main.cpp
     tcpstreamhandler.h
     tcpstreamhandler.cpp
@@ -19,7 +19,7 @@ add_executable(pnid_viewer
 )
 
 target_link_libraries(
-    pnid_viewer
+    sysanalysis
     Qt5::Quick
     Qt5::Qml
     Qt5::Gui
@@ -35,4 +35,4 @@ target_link_libraries(
     KF5::IconThemes
 )
 
-kconfig_add_kcfg_files(pnid_viewer GENERATE_MOC config.kcfgc)
+kconfig_add_kcfg_files(sysanalysis GENERATE_MOC config.kcfgc)

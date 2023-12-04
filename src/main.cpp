@@ -66,11 +66,9 @@ void addAboutInfo()
 int main(int argc, char *argv[])
 {
     KIconTheme::current(); //workaround for Windows, otherwise no icons will load
-#ifdef Q_OS_WIN
     if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE")) {
         QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
     }
-#endif
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

@@ -25,6 +25,7 @@
         <file alias="Switch.qml">contents/ui/pnid_elements/Switch.qml</file>
         <file alias="ReflectivitySensor.qml">contents/ui/pnid_elements/ReflectivitySensor.qml</file>
         <file alias="ProximitySensor.qml">contents/ui/pnid_elements/ProximitySensor.qml</file>
+        <file alias="PickAndPlace.qml">contents/ui/pnid_elements/PickAndPlace.qml</file>
     </qresource>
     <qresource prefix="/pnids">
         <file>contents/ui/pnids/pnidTest.qml</file>
