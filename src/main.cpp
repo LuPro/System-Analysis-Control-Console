@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("tcpHandler", &tcpHandler);
     PnidHandler pnidHandler(&engine, config->readPnidPath());
     engine.rootContext()->setContextProperty("pnidHandler", &pnidHandler);
-    qmlRegisterType<GraphDataHandler>("com.tust.graphs", 1, 0, "GraphDataHandler"); // TODO: think of a better name
+    qmlRegisterType<GraphDataHandler>("at.tust.graphs", 1, 0, "GraphDataHandler"); // TODO: think of a better name
 
     engine.rootContext()->setContextObject(new KLocalizedContext(&engine));
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

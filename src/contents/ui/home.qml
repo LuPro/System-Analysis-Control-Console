@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 import org.kde.kirigami 2.20 as Kirigami
 import "components"
 
-import com.tust.sysanalysis 0.1
+import at.tust.sysanalysis 0.1
 
 Kirigami.Page {
     title: i18nc("@title", "Home")

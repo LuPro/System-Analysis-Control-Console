@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 import QtQuick.Shapes 1.15
 import QtCharts 2.15
 import org.kde.kirigami 2.20 as Kirigami
-import com.tust.graphs 1.0
+import at.tust.graphs 1.0
 
 Item {
     id: graphDisplay

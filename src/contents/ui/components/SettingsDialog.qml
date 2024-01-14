@@ -5,7 +5,7 @@ import org.kde.kirigami 2.20 as Kirigami
 import QtQuick.Dialogs 1.3 as Dialogs
 import Qt.labs.platform 1.1 as Platform
 
-import com.tust.sysanalysis 0.1
+import at.tust.sysanalysis 0.1
 
 Kirigami.ApplicationWindow {
     id: dialog

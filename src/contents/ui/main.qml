@@ -4,7 +4,7 @@ import QtQuick.Controls 2.15 as Controls
 import QtQuick.Layouts 1.15
 import org.kde.kirigami 2.20 as Kirigami
 
-import com.tust.sysanalysis 0.1
+import at.tust.sysanalysis 0.1
 
 import "components"
 
