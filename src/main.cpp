@@ -26,7 +26,7 @@
 #define VERSION_STRING "0.1"
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 1
-#define APP_URI "com.tust.sysanalysis"
+#define APP_URI "at.tust.sysanalysis"
 #define APP_CONFIG_NAME "sysanalysisrc"
 
 void addAboutInfo()
@@ -48,7 +48,7 @@ void addAboutInfo()
         QStringLiteral("some@example.com")
     );
 
-    about.setBugAddress("https://github.com/LuPro/PnID-Viewer/issues");
+    about.setBugAddress("https://github.com/LuPro/System-Analysis-Control-Console/issues");
 
     // Set aboutData as information about the app
     KAboutData::setApplicationData(about);
