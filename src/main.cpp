@@ -45,7 +45,7 @@ void addAboutInfo()
     about.addAuthor(
         i18nc("@info:credit", "Luis Büchi"),
         i18nc("@info:credit", "Frontend & Backend"),
-        QStringLiteral("some@example.com")
+        QStringLiteral("buechi.luis.contact@gmail.com")
     );
 
     about.setBugAddress("https://github.com/LuPro/System-Analysis-Control-Console/issues");
