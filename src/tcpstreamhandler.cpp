@@ -23,7 +23,6 @@ void TcpStreamHandler::start(const quint16 &port, const quint16 &forwardPort)
 
 void TcpStreamHandler::connect(const QString &address, const quint16 &port)
 {
-    std::cout << "Connecting to server at address: " << address.toStdString() << std::endl;
     clientSocket = new QTcpSocket();
     clientSocket->connectToHost(address, port);
     //TODO: check whether connection succeeded

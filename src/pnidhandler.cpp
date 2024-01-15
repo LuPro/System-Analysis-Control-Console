@@ -56,11 +56,11 @@ void PnidHandler::processPackets(const QVector<DataPacket> &packets)
 {
     for (const DataPacket &packet : packets)
     {
-        std::cout << "packet! id: " << packet.m_id.toStdString() << ", value: " << packet.m_value << std::endl;
+        //std::cout << "packet! id: " << packet.m_id.toStdString() << ", value: " << packet.m_value << std::endl;
         int activePnid = pnidContainer->property("currentIndex").toInt();
         //right now I'm only updating the currently visible pnid, this should be a setting somewhere I think
         QObject *pnidElement = pnids.at(activePnid)->pnid->findChild<QObject*>(packet.m_id);
-        std::cout << "trying to find packet in pnid: " << activePnid << std::endl;
+        //std::cout << "trying to find packet in pnid: " << activePnid << std::endl;
         bool isSubObject = false;
         if (!pnidElement)
         {
